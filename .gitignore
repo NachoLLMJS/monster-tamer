@@ -10,3 +10,4 @@ node_modules
 # related to bundling
 all-game-assets.zip
 /dist
+.vercel
