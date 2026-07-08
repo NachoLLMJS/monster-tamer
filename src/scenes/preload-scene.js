@@ -107,7 +107,16 @@ export class PreloadScene extends BaseScene {
     );
 
     // monster assets
+    const biloreAssetVersion = 'bilore-battle-idle-v1';
     this.load.image(MONSTER_ASSET_KEYS.CARNODUSK, `${monsterTamerAssetPath}/monsters/carnodusk.png`);
+    this.load.spritesheet(
+      MONSTER_ASSET_KEYS.BILORE,
+      `${monsterTamerAssetPath}/monsters/bilore-battle-idle.png?v=${biloreAssetVersion}`,
+      {
+        frameWidth: 256,
+        frameHeight: 256,
+      }
+    );
     this.load.image(MONSTER_ASSET_KEYS.IGUANIGNITE, `${monsterTamerAssetPath}/monsters/iguanignite.png`);
     this.load.image(MONSTER_ASSET_KEYS.AQUAVALOR, `${monsterTamerAssetPath}/monsters/aquavalor.png`);
     this.load.image(MONSTER_ASSET_KEYS.FROSTSABER, `${monsterTamerAssetPath}/monsters/frostsaber.png`);
@@ -126,11 +135,11 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
-    const dataVersion = 'waterfront-man-idle-v6';
+    const dataVersion = 'bilore-battle-idle-v1';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, 'assets/data/attacks.json');
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ITEMS, 'assets/data/items.json');
-    this.load.json(DATA_ASSET_KEYS.MONSTERS, 'assets/data/monsters.json');
+    this.load.json(DATA_ASSET_KEYS.MONSTERS, `assets/data/monsters.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ENCOUNTERS, 'assets/data/encounters.json');
     this.load.json(DATA_ASSET_KEYS.NPCS, `assets/data/npcs.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.EVENTS, `assets/data/events.json?v=${dataVersion}`);
@@ -154,7 +163,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'right-house-dev-collision-v28-final';
+    const mainMapVersion = 'right-house-dev-collision-v37-one-tile';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,

@@ -11,7 +11,7 @@ export class BattleMonster {
   _monsterDetails;
   /** @protected @type {HealthBar} */
   _healthBar;
-  /** @protected @type {Phaser.GameObjects.Image} */
+  /** @protected @type {Phaser.GameObjects.Sprite} */
   _phaserGameObject;
   /** @protected @type {number} */
   _currentHealth;
@@ -44,8 +44,10 @@ export class BattleMonster {
     this._skipBattleAnimations = config.skipBattleAnimations || false;
 
     this._phaserGameObject = this._scene.add
-      .image(position.x, position.y, this._monsterDetails.assetKey, this._monsterDetails.assetFrame || 0)
+      .sprite(position.x, position.y, this._monsterDetails.assetKey, this._monsterDetails.assetFrame || 0)
       .setAlpha(0);
+    this.#createIdleAnimation();
+    this.#playIdleAnimation();
     this.#createHealthBarComponents(config.scaleHealthBarBackgroundImageByY);
     this._healthBar.setMeterPercentageAnimated(this._currentHealth / this._maxHealth, {
       skipBattleAnimations: true,
@@ -113,6 +115,8 @@ export class BattleMonster {
       }
     });
     this._phaserGameObject.setTexture(this._monsterDetails.assetKey, this._monsterDetails.assetFrame || 0);
+    this.#createIdleAnimation();
+    this.#playIdleAnimation();
     this._monsterNameText.setText(this._monsterDetails.name);
     this._setMonsterLevelText();
     this._monsterHealthBarLevelText.setX(this._monsterNameText.width + 35);
@@ -193,6 +197,28 @@ export class BattleMonster {
    */
   _setMonsterLevelText() {
     this._monsterHealthBarLevelText.setText(`L${this.level}`);
+  }
+
+  #createIdleAnimation() {
+    if (!this._monsterDetails.idleAnimationKey || this._scene.anims.exists(this._monsterDetails.idleAnimationKey)) {
+      return;
+    }
+    this._scene.anims.create({
+      key: this._monsterDetails.idleAnimationKey,
+      frames: this._scene.anims.generateFrameNumbers(this._monsterDetails.assetKey, { start: 0, end: 3 }),
+      frameRate: 4,
+      repeat: -1,
+      yoyo: true,
+    });
+  }
+
+  #playIdleAnimation() {
+    if (!this._monsterDetails.idleAnimationKey) {
+      this._phaserGameObject.stop();
+      this._phaserGameObject.setFrame(this._monsterDetails.assetFrame || 0);
+      return;
+    }
+    this._phaserGameObject.play(this._monsterDetails.idleAnimationKey, true);
   }
 
   /**

@@ -26,6 +26,7 @@ import Phaser from '../lib/phaser.js';
  * @property {string} name the name of the monster
  * @property {string} assetKey the name of the asset key that should be used for this monster
  * @property {number} [assetFrame=0] if the asset key is tied to a spritesheet, this frame will be used, defaults to 0
+ * @property {string} [idleAnimationKey] optional idle animation key to play in battle if this monster is a spritesheet
  * @property {number} currentLevel the current level of this monster
  * @property {number} maxHp the max health of this monster
  * @property {number} currentHp the max health of this monster

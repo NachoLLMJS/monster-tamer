@@ -1395,10 +1395,19 @@ export class WorldScene extends BaseScene {
       return;
     }
 
+    const editorGrid = Array.from({ length: map.height }, (_row, y) =>
+      Array.from({ length: map.width }, (_col, x) => {
+        const tile = collisionLayer.getTileAt(x, y);
+        return tile && tile.index > 0 ? DEV_COLLISION_GID : 0;
+      })
+    );
     const state = {
       enabled: false,
       showGrid: true,
-      changes: /** @type {{x: number, y: number, value: number}[]} */ ([]),
+      changes: /** @type {{x: number, y: number, value: number, before: number, after: number, action: string}[]} */ ([]),
+      hoverTile: /** @type {{x: number, y: number, value: number} | null} */ (null),
+      lastClickedTile: /** @type {{x: number, y: number, before: number, after: number} | null} */ (null),
+      lastInput: 'none',
     };
     const changeMap = new Map();
     const overlay = this.add.graphics().setDepth(9998).setVisible(false);
@@ -1419,19 +1428,46 @@ export class WorldScene extends BaseScene {
       .setDepth(9999)
       .setVisible(false);
 
+    const getGridValueAt = (x, y) => editorGrid[y]?.[x] || 0;
+
+    const writeCollisionTile = (x, y, value) => {
+      // Keep the editor independent from Phaser's TilemapLayer mutation APIs.
+      // putTileAt/removeTileAt can throw in this project because the collision tileset/layer
+      // is hidden and not safe to mutate live. The editor is the source of truth for visual
+      // marking and export; the JSON patch is then applied to main_1.json and reloaded.
+      editorGrid[y][x] = value > 0 ? DEV_COLLISION_GID : 0;
+    };
+
     const updateHelpText = () => {
+      const hoverText = state.hoverTile
+        ? `hover tile: (${state.hoverTile.x},${state.hoverTile.y}) value=${state.hoverTile.value}`
+        : 'hover tile: move mouse over map';
+      const clickedText = state.lastClickedTile
+        ? `last click: (${state.lastClickedTile.x},${state.lastClickedTile.y}) ${state.lastClickedTile.before}->${state.lastClickedTile.after}`
+        : 'last click: none';
       helpText.setText([
-        'DEV COLLISION EDITOR',
-        'F9: close/open   CLICK: toggle tile collision',
-        'G: grid on/off   C: copy/export patch   R: reset session changes',
+        'DEV COLLISION EDITOR - STABLE GRID MODE',
+        'F9: close/open   CLICK: toggle collision in editor grid',
+        'G: grid on/off   C: copy/export stable snapshot   R: reset session changes',
+        hoverText,
+        clickedText,
         `changes: ${state.changes.length}`,
-        'Send me the copied/downloaded JSON and I can apply it to main_1.json.',
+        `last input: ${state.lastInput}`,
+        `url: ${window.location.href}`,
+        'Yellow = collision from editorGrid. Clicks are visual/export only; reload after JSON is applied.',
       ]);
     };
 
-    const rememberChange = (x, y, value) => {
+    const rememberChange = (x, y, value, before) => {
       const key = `${x},${y}`;
-      changeMap.set(key, { x, y, value });
+      changeMap.set(key, {
+        x,
+        y,
+        value,
+        before,
+        after: value,
+        action: value > 0 ? 'set-collision' : 'clear-collision',
+      });
       state.changes = Array.from(changeMap.values()).sort((a, b) => a.y - b.y || a.x - b.x);
       updateHelpText();
     };
@@ -1445,17 +1481,26 @@ export class WorldScene extends BaseScene {
       const tileHeight = map.tileHeight;
       for (let y = 0; y < map.height; y += 1) {
         for (let x = 0; x < map.width; x += 1) {
-          const tile = collisionLayer.getTileAt(x, y);
-          if (tile && tile.index > 0) {
-            overlay.fillStyle(0xff8c00, 0.35);
+          const value = getGridValueAt(x, y);
+          if (value > 0) {
+            overlay.fillStyle(0xffc400, 0.42);
             overlay.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-            overlay.lineStyle(1, 0xffdd66, 0.85);
+            overlay.lineStyle(2, 0xfff2a3, 0.95);
             overlay.strokeRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
           } else if (state.showGrid) {
-            overlay.lineStyle(1, 0x00aaff, 0.25);
+            overlay.lineStyle(1, 0x00aaff, 0.18);
             overlay.strokeRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
           }
         }
+      }
+      if (state.hoverTile) {
+        overlay.lineStyle(3, 0x00ff66, 1);
+        overlay.strokeRect(
+          state.hoverTile.x * tileWidth,
+          state.hoverTile.y * tileHeight,
+          tileWidth,
+          tileHeight
+        );
       }
     };
 
@@ -1471,7 +1516,7 @@ export class WorldScene extends BaseScene {
       panel.style.right = '12px';
       panel.style.bottom = '12px';
       panel.style.zIndex = '999999';
-      panel.style.width = '420px';
+      panel.style.width = '460px';
       panel.style.maxWidth = 'calc(100vw - 24px)';
       panel.style.background = '#111827';
       panel.style.border = '2px solid #f59e0b';
@@ -1481,10 +1526,10 @@ export class WorldScene extends BaseScene {
       panel.style.font = '12px monospace';
       panel.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
-          <strong>Collision patch export</strong>
+          <strong>Collision stable-grid export</strong>
           <button data-role="close" style="cursor:pointer;">x</button>
         </div>
-        <textarea data-role="json" style="width:100%;height:180px;box-sizing:border-box;font:12px monospace;"></textarea>
+        <textarea data-role="json" style="width:100%;height:220px;box-sizing:border-box;font:12px monospace;"></textarea>
         <div style="display:flex;gap:8px;margin-top:8px;">
           <button data-role="copy" style="cursor:pointer;">Copy</button>
           <button data-role="download" style="cursor:pointer;">Download</button>
@@ -1497,51 +1542,70 @@ export class WorldScene extends BaseScene {
       return panel;
     };
 
-    const getCollisionValueAt = (x, y) => {
-      const tile = collisionLayer.getTileAt(x, y);
-      return tile && tile.index > 0 ? tile.index : 0;
-    };
-
     const createCollisionWindowSnapshot = () => {
-      const bounds = { x: 10, y: 68, width: 20, height: 12 };
+      const changedTiles = state.changes.length > 0 ? state.changes : state.lastClickedTile ? [state.lastClickedTile] : [];
+      const minX = changedTiles.length > 0 ? Math.min(...changedTiles.map((tile) => tile.x)) : 10;
+      const maxX = changedTiles.length > 0 ? Math.max(...changedTiles.map((tile) => tile.x)) : 29;
+      const minY = changedTiles.length > 0 ? Math.min(...changedTiles.map((tile) => tile.y)) : 68;
+      const maxY = changedTiles.length > 0 ? Math.max(...changedTiles.map((tile) => tile.y)) : 79;
+      const padding = 3;
+      const bounds = {
+        x: Math.max(0, minX - padding),
+        y: Math.max(0, minY - padding),
+        width: Math.min(map.width, maxX + padding + 1) - Math.max(0, minX - padding),
+        height: Math.min(map.height, maxY + padding + 1) - Math.max(0, minY - padding),
+      };
       const rows = [];
       for (let y = bounds.y; y < bounds.y + bounds.height; y += 1) {
         const row = [];
         for (let x = bounds.x; x < bounds.x + bounds.width; x += 1) {
-          row.push(getCollisionValueAt(x, y));
+          row.push(getGridValueAt(x, y));
         }
         rows.push(row);
       }
       return { ...bounds, rows };
     };
 
-    const createFullCollisionSnapshot = () => {
-      const rows = [];
-      for (let y = 0; y < map.height; y += 1) {
-        const row = [];
-        for (let x = 0; x < map.width; x += 1) {
-          row.push(getCollisionValueAt(x, y));
-        }
-        rows.push(row);
-      }
-      return { width: map.width, height: map.height, rows };
-    };
+    const createFullCollisionSnapshot = () => ({
+      width: map.width,
+      height: map.height,
+      rows: editorGrid.map((row) => row.slice()),
+    });
 
     const exportPatch = () => {
+      const playerTile = this.#player?.sprite
+        ? {
+            x: Math.floor(this.#player.sprite.x / map.tileWidth),
+            y: Math.floor(this.#player.sprite.y / map.tileHeight),
+            worldX: this.#player.sprite.x,
+            worldY: this.#player.sprite.y,
+          }
+        : null;
       const patch = {
         map: 'main_1.json',
         layer: 'Collision',
         collisionGid: DEV_COLLISION_GID,
-        exportType: 'snapshot-v2',
+        exportType: 'snapshot-v4-stable-grid',
+        instructions: 'Use snapshot/window from editorGrid as authoritative. It is independent of Phaser tile render caching.',
+        source: {
+          href: window.location.href,
+          userAgent: window.navigator.userAgent,
+          mapWidth: map.width,
+          mapHeight: map.height,
+          tileWidth: map.tileWidth,
+          tileHeight: map.tileHeight,
+        },
+        hoverTile: state.hoverTile,
+        lastClickedTile: state.lastClickedTile,
+        playerTile,
         changes: state.changes,
         window: createCollisionWindowSnapshot(),
         snapshot: createFullCollisionSnapshot(),
       };
       const json = JSON.stringify(patch, null, 2);
-      // Expose it for DevTools/Hermes browser_console and for the user.
       window.__tameriaCollisionPatch = patch;
       window.localStorage.setItem('tameriaCollisionPatch', json);
-      console.log('TAMERIA_COLLISION_PATCH', json);
+      console.log('TAMERIA_COLLISION_PATCH_STABLE_GRID', json);
       if (navigator.clipboard) {
         navigator.clipboard.writeText(json).catch(() => {});
       }
@@ -1569,14 +1633,14 @@ export class WorldScene extends BaseScene {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'tameria-collision-patch.json';
+        link.download = 'tameria-collision-stable-grid-patch.json';
         document.body.appendChild(link);
         link.click();
         link.remove();
         URL.revokeObjectURL(url);
       });
       updateHelpText();
-      helpText.setText(`${helpText.text}\nExport panel updated/copied (${state.changes.length} changes).`);
+      helpText.setText(`${helpText.text}\nStable-grid export updated/copied (${state.changes.length} changes).`);
     };
 
     const setEditorEnabled = (enabled) => {
@@ -1594,6 +1658,7 @@ export class WorldScene extends BaseScene {
     const resetSessionChanges = () => {
       changeMap.clear();
       state.changes = [];
+      state.lastClickedTile = null;
       updateHelpText();
       redraw();
     };
@@ -1673,6 +1738,83 @@ export class WorldScene extends BaseScene {
       setEditorEnabled(true);
     }
 
+    const setHoverTileAt = (tileX, tileY, source) => {
+      if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) {
+        state.hoverTile = null;
+        state.lastInput = source;
+        updateHelpText();
+        redraw();
+        return;
+      }
+      state.hoverTile = { x: tileX, y: tileY, value: getGridValueAt(tileX, tileY) };
+      state.lastInput = source;
+      updateHelpText();
+      redraw();
+    };
+
+    const toggleTileAt = (tileX, tileY, source) => {
+      if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) {
+        return;
+      }
+      const beforeValue = getGridValueAt(tileX, tileY);
+      const nextValue = beforeValue > 0 ? 0 : DEV_COLLISION_GID;
+      writeCollisionTile(tileX, tileY, nextValue);
+      state.lastClickedTile = { x: tileX, y: tileY, before: beforeValue, after: nextValue };
+      state.hoverTile = { x: tileX, y: tileY, value: nextValue };
+      state.lastInput = source;
+      rememberChange(tileX, tileY, nextValue, beforeValue);
+      redraw();
+    };
+
+    const getTileFromCanvasEvent = (event) => {
+      const canvas = this.game.canvas;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const screenX = (event.clientX - rect.left) * scaleX;
+      const screenY = (event.clientY - rect.top) * scaleY;
+      const worldPoint = this.cameras.main.getWorldPoint(screenX, screenY);
+      return {
+        x: Math.floor(worldPoint.x / map.tileWidth),
+        y: Math.floor(worldPoint.y / map.tileHeight),
+      };
+    };
+
+    const handleCanvasPointerMove = (event) => {
+      if (!state.enabled) {
+        return;
+      }
+      const tile = getTileFromCanvasEvent(event);
+      setHoverTileAt(tile.x, tile.y, 'dom move');
+    };
+
+    const handleCanvasPointerDown = (event) => {
+      if (!state.enabled || event.button !== 0) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      const tile = getTileFromCanvasEvent(event);
+      toggleTileAt(tile.x, tile.y, 'dom click');
+    };
+
+    this.game.canvas.addEventListener('pointermove', handleCanvasPointerMove, true);
+    this.game.canvas.addEventListener('pointerdown', handleCanvasPointerDown, true);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.game.canvas.removeEventListener('pointermove', handleCanvasPointerMove, true);
+      this.game.canvas.removeEventListener('pointerdown', handleCanvasPointerDown, true);
+    });
+
+    this.input.on('pointermove', (pointer) => {
+      if (!state.enabled) {
+        return;
+      }
+      const worldPoint = pointer.positionToCamera(this.cameras.main);
+      const tileX = Math.floor(worldPoint.x / map.tileWidth);
+      const tileY = Math.floor(worldPoint.y / map.tileHeight);
+      setHoverTileAt(tileX, tileY, 'phaser move');
+    });
+
     this.input.on('pointerdown', (pointer) => {
       if (!state.enabled || pointer.button !== 0) {
         return;
@@ -1680,18 +1822,7 @@ export class WorldScene extends BaseScene {
       const worldPoint = pointer.positionToCamera(this.cameras.main);
       const tileX = Math.floor(worldPoint.x / map.tileWidth);
       const tileY = Math.floor(worldPoint.y / map.tileHeight);
-      if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) {
-        return;
-      }
-      const existingTile = collisionLayer.getTileAt(tileX, tileY);
-      const nextValue = existingTile && existingTile.index > 0 ? 0 : DEV_COLLISION_GID;
-      if (nextValue > 0) {
-        collisionLayer.putTileAt(nextValue, tileX, tileY);
-      } else {
-        collisionLayer.removeTileAt(tileX, tileY);
-      }
-      rememberChange(tileX, tileY, nextValue);
-      redraw();
+      toggleTileAt(tileX, tileY, 'phaser click');
     });
   }
 

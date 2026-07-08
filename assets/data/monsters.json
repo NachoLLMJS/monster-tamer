@@ -7,7 +7,9 @@
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
-    "attackIds": [2],
+    "attackIds": [
+      2
+    ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
@@ -17,17 +19,20 @@
   {
     "id": "2",
     "monsterId": 2,
-    "name": "carnodusk",
-    "assetKey": "CARNODUSK",
+    "name": "Bilore",
+    "assetKey": "BILORE",
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
-    "attackIds": [1],
+    "attackIds": [
+      1
+    ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
     "baseExp": 52,
-    "currentExp": 125
+    "currentExp": 125,
+    "idleAnimationKey": "BILORE_BATTLE_IDLE"
   },
   {
     "id": "3",
@@ -37,7 +42,9 @@
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
-    "attackIds": [2],
+    "attackIds": [
+      2
+    ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
@@ -52,7 +59,9 @@
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
-    "attackIds": [2],
+    "attackIds": [
+      2
+    ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
@@ -67,7 +76,9 @@
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
-    "attackIds": [1],
+    "attackIds": [
+      1
+    ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
@@ -82,7 +93,9 @@
     "assetFrame": 0,
     "currentHp": 15,
     "maxHp": 15,
-    "attackIds": [2],
+    "attackIds": [
+      2
+    ],
     "baseAttack": 3,
     "currentAttack": 3,
     "currentLevel": 3,
@@ -92,16 +105,19 @@
   {
     "id": "7",
     "monsterId": 2,
-    "name": "carnodusk",
-    "assetKey": "CARNODUSK",
+    "name": "Bilore",
+    "assetKey": "BILORE",
     "assetFrame": 0,
     "currentHp": 15,
     "maxHp": 15,
-    "attackIds": [1],
+    "attackIds": [
+      1
+    ],
     "baseAttack": 3,
     "currentAttack": 3,
     "currentLevel": 3,
     "baseExp": 41,
-    "currentExp": 27
+    "currentExp": 27,
+    "idleAnimationKey": "BILORE_BATTLE_IDLE"
   }
 ]

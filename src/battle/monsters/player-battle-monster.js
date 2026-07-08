@@ -1,7 +1,7 @@
 import { KENNEY_FUTURE_NARROW_FONT_NAME } from '../../assets/font-keys.js';
 import { ExpBar } from '../../common/exp-bar.js';
 import { calculateExpBarCurrentValue, handleMonsterGainingExperience } from '../../utils/leveling-utils.js';
-import { BattleMonster } from './battle-monster.js';
+import { BattleMonster } from './battle-monster.js?v=bilore-battle-idle-v1';
 
 /** @type {import('../../types/typedef').Coordinate} */
 const PLAYER_POSITION = Object.freeze({
