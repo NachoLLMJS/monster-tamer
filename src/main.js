@@ -1,8 +1,8 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js?v=right-house-dev-collision-v24';
+import { PreloadScene } from './scenes/preload-scene.js?v=right-house-dev-collision-v28-final';
 import { BattleScene } from './scenes/battle-scene.js?v=battle-background-fit-v1';
-import { WorldScene } from './scenes/world-scene.js?v=right-house-dev-collision-v24';
+import { WorldScene } from './scenes/world-scene.js?v=right-house-dev-collision-v28-final';
 import { TitleScene } from './scenes/title-scene.js';
 import { OptionsScene } from './scenes/options-scene.js';
 import { TestScene } from './scenes/test-scene.js';

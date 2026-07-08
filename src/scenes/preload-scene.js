@@ -154,7 +154,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'right-house-dev-collision-v24';
+    const mainMapVersion = 'right-house-dev-collision-v28-final';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
