@@ -3,7 +3,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!assets/|src/|favicon.ico).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
