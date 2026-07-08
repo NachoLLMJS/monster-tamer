@@ -44,6 +44,15 @@ import {
  * @property {boolean} [isInterior]
  */
 
+const RIGHT_HOUSE_AC_FAN_ANIMATION_KEY = 'RIGHT_HOUSE_AC_FAN_SPIN';
+const RIGHT_HOUSE_AC_FAN_POSITIONS = Object.freeze([
+  { x: 1426, y: 4392 },
+  { x: 1451, y: 4392 },
+  { x: 1426, y: 4429 },
+  { x: 1451, y: 4429 },
+]);
+const DEV_COLLISION_GID = 189;
+
 export class WorldScene extends BaseScene {
   /** @type {Player} */
   #player;
@@ -222,6 +231,7 @@ export class WorldScene extends BaseScene {
       return;
     }
     collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2);
+    this.#createDevCollisionEditor(collisionLayer, map);
 
     // create interactive layer
     const hasSignLayer = map.getObjectLayer(OBJECT_LAYER_NAMES.SIGN) !== null;
@@ -243,6 +253,7 @@ export class WorldScene extends BaseScene {
     }
     this.cameras.main.setZoom(0.8);
     this.add.image(0, 0, `${this.#sceneData.area.toUpperCase()}_BACKGROUND`, 0).setOrigin(0);
+    this.#createMainMapAnimatedDetails();
 
     // create items and collisions
     this.#createItems(map);
@@ -681,6 +692,12 @@ export class WorldScene extends BaseScene {
         position: { x: npcObject.x, y: npcObject.y - TILE_SIZE },
         direction: DIRECTION.DOWN,
         frame: npcDetails.frame,
+        assetKey: npcDetails.assetKey,
+        idleFrameConfig: npcDetails.idleFrameConfig,
+        origin: npcDetails.origin,
+        useSeparateLeftAnimations: npcDetails.useSeparateLeftAnimations,
+        idleAnimationKey: npcDetails.idleAnimationKey,
+        scale: npcDetails.scale,
         npcPath,
         movementPattern: npcMovement,
         events: npcDetails.events,
@@ -1044,6 +1061,12 @@ export class WorldScene extends BaseScene {
       position: { x: gameEvent.data.x * TILE_SIZE, y: gameEvent.data.y * TILE_SIZE },
       direction: gameEvent.data.direction,
       frame: gameEvent.data.frame,
+      assetKey: gameEvent.data.assetKey,
+      idleFrameConfig: gameEvent.data.idleFrameConfig,
+      origin: gameEvent.data.origin,
+      useSeparateLeftAnimations: gameEvent.data.useSeparateLeftAnimations,
+      idleAnimationKey: gameEvent.data.idleAnimationKey,
+      scale: gameEvent.data.scale,
       npcPath: {
         0: { x: gameEvent.data.x * TILE_SIZE, y: gameEvent.data.y * TILE_SIZE },
       },
@@ -1192,6 +1215,10 @@ export class WorldScene extends BaseScene {
       this.#isProcessingCutSceneEvent = false;
       this.#handleCutSceneInteraction();
       return;
+    }
+
+    if (gameEvent.data.npcDirection !== undefined) {
+      targetNpc.faceDirection(gameEvent.data.npcDirection);
     }
 
     targetNpc.isTalkingToPlayer = true;
@@ -1354,6 +1381,346 @@ export class WorldScene extends BaseScene {
         }
         return false;
       });
+  }
+
+  /**
+   * @param {Phaser.Tilemaps.TilemapLayer} collisionLayer
+   * @param {Phaser.Tilemaps.Tilemap} map
+   * @returns {void}
+   */
+  #createDevCollisionEditor(collisionLayer, map) {
+    const normalizedArea = this.#sceneData.area?.toUpperCase();
+    const isMainMap = normalizedArea === 'MAIN_1' || normalizedArea === WORLD_ASSET_KEYS.MAIN_1_LEVEL;
+    if (!isMainMap) {
+      return;
+    }
+
+    const state = {
+      enabled: false,
+      showGrid: true,
+      changes: /** @type {{x: number, y: number, value: number}[]} */ ([]),
+    };
+    const changeMap = new Map();
+    const overlay = this.add.graphics().setDepth(9998).setVisible(false);
+    const helpText = this.add
+      .text(
+        8,
+        8,
+        '',
+        {
+          fontFamily: 'monospace',
+          fontSize: '14px',
+          color: '#ffffff',
+          backgroundColor: '#000000cc',
+          padding: { x: 8, y: 6 },
+        }
+      )
+      .setScrollFactor(0)
+      .setDepth(9999)
+      .setVisible(false);
+
+    const updateHelpText = () => {
+      helpText.setText([
+        'DEV COLLISION EDITOR',
+        'F9: close/open   CLICK: toggle tile collision',
+        'G: grid on/off   C: copy/export patch   R: reset session changes',
+        `changes: ${state.changes.length}`,
+        'Send me the copied/downloaded JSON and I can apply it to main_1.json.',
+      ]);
+    };
+
+    const rememberChange = (x, y, value) => {
+      const key = `${x},${y}`;
+      changeMap.set(key, { x, y, value });
+      state.changes = Array.from(changeMap.values()).sort((a, b) => a.y - b.y || a.x - b.x);
+      updateHelpText();
+    };
+
+    const redraw = () => {
+      overlay.clear();
+      if (!state.enabled) {
+        return;
+      }
+      const tileWidth = map.tileWidth;
+      const tileHeight = map.tileHeight;
+      for (let y = 0; y < map.height; y += 1) {
+        for (let x = 0; x < map.width; x += 1) {
+          const tile = collisionLayer.getTileAt(x, y);
+          if (tile && tile.index > 0) {
+            overlay.fillStyle(0xff8c00, 0.35);
+            overlay.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+            overlay.lineStyle(1, 0xffdd66, 0.85);
+            overlay.strokeRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+          } else if (state.showGrid) {
+            overlay.lineStyle(1, 0x00aaff, 0.25);
+            overlay.strokeRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
+          }
+        }
+      }
+    };
+
+    const getOrCreateExportPanel = () => {
+      let panel = document.getElementById('tameria-collision-export-panel');
+      if (panel) {
+        return panel;
+      }
+
+      panel = document.createElement('div');
+      panel.id = 'tameria-collision-export-panel';
+      panel.style.position = 'fixed';
+      panel.style.right = '12px';
+      panel.style.bottom = '12px';
+      panel.style.zIndex = '999999';
+      panel.style.width = '420px';
+      panel.style.maxWidth = 'calc(100vw - 24px)';
+      panel.style.background = '#111827';
+      panel.style.border = '2px solid #f59e0b';
+      panel.style.borderRadius = '8px';
+      panel.style.padding = '10px';
+      panel.style.color = '#ffffff';
+      panel.style.font = '12px monospace';
+      panel.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
+          <strong>Collision patch export</strong>
+          <button data-role="close" style="cursor:pointer;">x</button>
+        </div>
+        <textarea data-role="json" style="width:100%;height:180px;box-sizing:border-box;font:12px monospace;"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button data-role="copy" style="cursor:pointer;">Copy</button>
+          <button data-role="download" style="cursor:pointer;">Download</button>
+        </div>
+      `;
+      document.body.appendChild(panel);
+      panel.querySelector('[data-role="close"]')?.addEventListener('click', () => {
+        panel?.remove();
+      });
+      return panel;
+    };
+
+    const getCollisionValueAt = (x, y) => {
+      const tile = collisionLayer.getTileAt(x, y);
+      return tile && tile.index > 0 ? tile.index : 0;
+    };
+
+    const createCollisionWindowSnapshot = () => {
+      const bounds = { x: 10, y: 68, width: 20, height: 12 };
+      const rows = [];
+      for (let y = bounds.y; y < bounds.y + bounds.height; y += 1) {
+        const row = [];
+        for (let x = bounds.x; x < bounds.x + bounds.width; x += 1) {
+          row.push(getCollisionValueAt(x, y));
+        }
+        rows.push(row);
+      }
+      return { ...bounds, rows };
+    };
+
+    const createFullCollisionSnapshot = () => {
+      const rows = [];
+      for (let y = 0; y < map.height; y += 1) {
+        const row = [];
+        for (let x = 0; x < map.width; x += 1) {
+          row.push(getCollisionValueAt(x, y));
+        }
+        rows.push(row);
+      }
+      return { width: map.width, height: map.height, rows };
+    };
+
+    const exportPatch = () => {
+      const patch = {
+        map: 'main_1.json',
+        layer: 'Collision',
+        collisionGid: DEV_COLLISION_GID,
+        exportType: 'snapshot-v2',
+        changes: state.changes,
+        window: createCollisionWindowSnapshot(),
+        snapshot: createFullCollisionSnapshot(),
+      };
+      const json = JSON.stringify(patch, null, 2);
+      // Expose it for DevTools/Hermes browser_console and for the user.
+      window.__tameriaCollisionPatch = patch;
+      window.localStorage.setItem('tameriaCollisionPatch', json);
+      console.log('TAMERIA_COLLISION_PATCH', json);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(json).catch(() => {});
+      }
+
+      const panel = getOrCreateExportPanel();
+      const textarea = /** @type {HTMLTextAreaElement | null} */ (panel.querySelector('[data-role="json"]'));
+      const copyButton = panel.querySelector('[data-role="copy"]');
+      const downloadButton = panel.querySelector('[data-role="download"]');
+      if (textarea) {
+        textarea.value = json;
+        textarea.focus();
+        textarea.select();
+      }
+      copyButton?.replaceWith(copyButton.cloneNode(true));
+      downloadButton?.replaceWith(downloadButton.cloneNode(true));
+      panel.querySelector('[data-role="copy"]')?.addEventListener('click', () => {
+        if (textarea) {
+          textarea.focus();
+          textarea.select();
+        }
+        navigator.clipboard?.writeText(json).catch(() => {});
+      });
+      panel.querySelector('[data-role="download"]')?.addEventListener('click', () => {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'tameria-collision-patch.json';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      });
+      updateHelpText();
+      helpText.setText(`${helpText.text}\nExport panel updated/copied (${state.changes.length} changes).`);
+    };
+
+    const setEditorEnabled = (enabled) => {
+      state.enabled = enabled;
+      overlay.setVisible(state.enabled);
+      helpText.setVisible(state.enabled);
+      updateHelpText();
+      redraw();
+    };
+
+    const toggleEditor = () => {
+      setEditorEnabled(!state.enabled);
+    };
+
+    const resetSessionChanges = () => {
+      changeMap.clear();
+      state.changes = [];
+      updateHelpText();
+      redraw();
+    };
+
+    const devButton = document.createElement('button');
+    devButton.textContent = 'DEV COLLISION';
+    devButton.style.position = 'fixed';
+    devButton.style.right = '12px';
+    devButton.style.top = '12px';
+    devButton.style.zIndex = '999999';
+    devButton.style.padding = '8px 10px';
+    devButton.style.font = '700 12px monospace';
+    devButton.style.color = '#ffffff';
+    devButton.style.background = '#111827';
+    devButton.style.border = '2px solid #f59e0b';
+    devButton.style.borderRadius = '6px';
+    devButton.style.cursor = 'pointer';
+    devButton.title = 'Open/close collision editor';
+    document.body.appendChild(devButton);
+    devButton.addEventListener('click', () => {
+      this.game.canvas.focus();
+      toggleEditor();
+    });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      devButton.remove();
+    });
+
+    const handleDevKey = (event) => {
+      const key = event.key.toLowerCase();
+      if (event.key === 'F9' || key === '`' || key === 'ñ' || key === 'e') {
+        event.preventDefault();
+        toggleEditor();
+        return;
+      }
+      if (!state.enabled) {
+        return;
+      }
+      if (key === 'g') {
+        event.preventDefault();
+        state.showGrid = !state.showGrid;
+        redraw();
+      }
+      if (key === 'c') {
+        event.preventDefault();
+        exportPatch();
+      }
+      if (key === 'r') {
+        event.preventDefault();
+        resetSessionChanges();
+      }
+    };
+
+    window.addEventListener('keydown', handleDevKey);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      window.removeEventListener('keydown', handleDevKey);
+    });
+
+    this.input.keyboard?.on('keydown-F9', toggleEditor);
+    this.input.keyboard?.on('keydown-G', () => {
+      if (state.enabled) {
+        state.showGrid = !state.showGrid;
+        redraw();
+      }
+    });
+    this.input.keyboard?.on('keydown-C', () => {
+      if (state.enabled) {
+        exportPatch();
+      }
+    });
+    this.input.keyboard?.on('keydown-R', () => {
+      if (state.enabled) {
+        resetSessionChanges();
+      }
+    });
+
+    if (new URLSearchParams(window.location.search).get('devCollision') === '1') {
+      setEditorEnabled(true);
+    }
+
+    this.input.on('pointerdown', (pointer) => {
+      if (!state.enabled || pointer.button !== 0) {
+        return;
+      }
+      const worldPoint = pointer.positionToCamera(this.cameras.main);
+      const tileX = Math.floor(worldPoint.x / map.tileWidth);
+      const tileY = Math.floor(worldPoint.y / map.tileHeight);
+      if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) {
+        return;
+      }
+      const existingTile = collisionLayer.getTileAt(tileX, tileY);
+      const nextValue = existingTile && existingTile.index > 0 ? 0 : DEV_COLLISION_GID;
+      if (nextValue > 0) {
+        collisionLayer.putTileAt(nextValue, tileX, tileY);
+      } else {
+        collisionLayer.removeTileAt(tileX, tileY);
+      }
+      rememberChange(tileX, tileY, nextValue);
+      redraw();
+    });
+  }
+
+  /**
+   * @returns {void}
+   */
+  #createMainMapAnimatedDetails() {
+    const normalizedArea = this.#sceneData.area?.toUpperCase();
+    const isMainMap = normalizedArea === 'MAIN_1' || normalizedArea === WORLD_ASSET_KEYS.MAIN_1_LEVEL;
+    if (!isMainMap) {
+      return;
+    }
+
+    if (!this.anims.exists(RIGHT_HOUSE_AC_FAN_ANIMATION_KEY)) {
+      this.anims.create({
+        key: RIGHT_HOUSE_AC_FAN_ANIMATION_KEY,
+        frames: this.anims.generateFrameNumbers(WORLD_ASSET_KEYS.AC_FAN_SPIN, { start: 0, end: 5 }),
+        frameRate: 12,
+        repeat: -1,
+      });
+    }
+
+    RIGHT_HOUSE_AC_FAN_POSITIONS.forEach((position) => {
+      this.add
+        .sprite(position.x, position.y, WORLD_ASSET_KEYS.AC_FAN_SPIN, 0)
+        .setOrigin(0.5)
+        .setDepth(1)
+        .play(RIGHT_HOUSE_AC_FAN_ANIMATION_KEY);
+    });
   }
 
   /**

@@ -24,6 +24,12 @@ export const NPC_MOVEMENT_PATTERN = Object.freeze({
  * @typedef NPCConfigProps
  * @type {object}
  * @property {number} frame
+ * @property {string} [assetKey]
+ * @property {import('./character').CharacterIdleFrameConfig} [idleFrameConfig]
+ * @property {number} [scale]
+ * @property {import('../../types/typedef.js').Coordinate} [origin]
+ * @property {boolean} [useSeparateLeftAnimations]
+ * @property {string} [idleAnimationKey]
  * @property {NPCPath} npcPath
  * @property {NpcMovementPattern} movementPattern
  * @property {import('../../types/typedef.js').NpcEvent[]} events
@@ -52,6 +58,10 @@ export class NPC extends Character {
   #animationKeyPrefix;
   /** @type {number} */
   #id;
+  /** @type {boolean} */
+  #useSeparateLeftAnimations;
+  /** @type {string | undefined} */
+  #idleAnimationKey;
 
   /**
    * @param {NPCConfig} config
@@ -59,9 +69,9 @@ export class NPC extends Character {
   constructor(config) {
     super({
       ...config,
-      assetKey: CHARACTER_ASSET_KEYS.NPC,
-      origin: { x: 0, y: 0 },
-      idleFrameConfig: {
+      assetKey: config.assetKey || CHARACTER_ASSET_KEYS.NPC,
+      origin: config.origin || { x: 0, y: 0 },
+      idleFrameConfig: config.idleFrameConfig || {
         DOWN: config.frame,
         UP: config.frame + 1,
         NONE: config.frame,
@@ -75,10 +85,12 @@ export class NPC extends Character {
     this.#currentPathIndex = 0;
     this.#movementPattern = config.movementPattern;
     this.#lastMovementTime = Phaser.Math.Between(3500, 5000);
-    this._phaserGameObject.setScale(4);
+    this._phaserGameObject.setScale(config.scale ?? 4);
     this.#events = config.events;
     this.#animationKeyPrefix = config.animationKeyPrefix;
     this.#id = config.id;
+    this.#useSeparateLeftAnimations = config.useSeparateLeftAnimations ?? false;
+    this.#idleAnimationKey = config.idleAnimationKey;
   }
 
   /** @type {import('../../types/typedef.js').NpcEvent[]} */
@@ -146,21 +158,50 @@ export class NPC extends Character {
   facePlayer(playerDirection) {
     switch (playerDirection) {
       case DIRECTION.DOWN:
-        this._phaserGameObject.setFrame(this._idleFrameConfig.UP).setFlipX(false);
+        this.faceDirection(DIRECTION.UP);
         break;
       case DIRECTION.LEFT:
-        this._phaserGameObject.setFrame(this._idleFrameConfig.RIGHT).setFlipX(false);
+        this.faceDirection(DIRECTION.RIGHT);
         break;
       case DIRECTION.RIGHT:
-        this._phaserGameObject.setFrame(this._idleFrameConfig.LEFT).setFlipX(true);
+        this.faceDirection(DIRECTION.LEFT);
         break;
       case DIRECTION.UP:
-        this._phaserGameObject.setFrame(this._idleFrameConfig.DOWN).setFlipX(false);
+        this.faceDirection(DIRECTION.DOWN);
         break;
       case DIRECTION.NONE:
         break;
       default:
         exhaustiveGuard(playerDirection);
+    }
+  }
+
+  /**
+   * @param {import('../../common/direction.js').Direction} direction
+   * @returns {void}
+   */
+  faceDirection(direction) {
+    this._direction = direction;
+    this._phaserGameObject.anims.stop();
+    this._phaserGameObject.setFlipX(false);
+    switch (direction) {
+      case DIRECTION.DOWN:
+        this._phaserGameObject.setFrame(this._idleFrameConfig.DOWN);
+        break;
+      case DIRECTION.LEFT:
+        this._phaserGameObject.setFrame(this._idleFrameConfig.LEFT).setFlipX(!this.#useSeparateLeftAnimations);
+        break;
+      case DIRECTION.RIGHT:
+        this._phaserGameObject.setFrame(this._idleFrameConfig.RIGHT);
+        break;
+      case DIRECTION.UP:
+        this._phaserGameObject.setFrame(this._idleFrameConfig.UP);
+        break;
+      case DIRECTION.NONE:
+        this._phaserGameObject.setFrame(this._idleFrameConfig.NONE);
+        break;
+      default:
+        exhaustiveGuard(direction);
     }
   }
 
@@ -175,11 +216,22 @@ export class NPC extends Character {
     if (this.#talkingToPlayer) {
       return;
     }
-    super.update(time);
-
     if (this.#movementPattern === NPC_MOVEMENT_PATTERN.IDLE) {
+      if (this.#idleAnimationKey !== undefined) {
+        if (
+          !this._phaserGameObject.anims.isPlaying ||
+          this._phaserGameObject.anims.currentAnim?.key !== this.#idleAnimationKey
+        ) {
+          this._phaserGameObject.setFlipX(false);
+          this._phaserGameObject.play(this.#idleAnimationKey);
+        }
+        return;
+      }
+      super.update(time);
       return;
     }
+
+    super.update(time);
 
     if (this.#lastMovementTime < time) {
       /** @type {import('../../common/direction.js').Direction} */
@@ -244,6 +296,16 @@ export class NPC extends Character {
         }
         break;
       case DIRECTION.LEFT:
+        if (this.#useSeparateLeftAnimations) {
+          if (
+            !this._phaserGameObject.anims.isPlaying ||
+            this._phaserGameObject.anims.currentAnim?.key !== `${this.#animationKeyPrefix}_${DIRECTION.LEFT}`
+          ) {
+            this._phaserGameObject.play(`${this.#animationKeyPrefix}_${DIRECTION.LEFT}`);
+            this._phaserGameObject.setFlipX(false);
+          }
+          break;
+        }
         if (
           !this._phaserGameObject.anims.isPlaying ||
           this._phaserGameObject.anims.currentAnim?.key !== `${this.#animationKeyPrefix}_${DIRECTION.RIGHT}`

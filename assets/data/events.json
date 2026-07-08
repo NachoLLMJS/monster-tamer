@@ -8,9 +8,23 @@
           "direction": "DOWN",
           "x": 16,
           "y": 73,
-          "frame": 30,
+          "frame": 7,
+          "assetKey": "INTRO_GIRL",
           "id": 1001,
-          "animationKeyPrefix": "NPC_4"
+          "animationKeyPrefix": "INTRO_GIRL",
+          "idleFrameConfig": {
+            "DOWN": 7,
+            "UP": 1,
+            "NONE": 7,
+            "LEFT": 10,
+            "RIGHT": 4
+          },
+          "origin": {
+            "x": 0,
+            "y": 0.27
+          },
+          "useSeparateLeftAnimations": true,
+          "scale": 1
         }
       },
       {
@@ -23,10 +37,11 @@
         "type": "TALK_TO_PLAYER",
         "data": {
           "id": 1001,
+          "npcDirection": "LEFT",
           "messages": [
             "I know all kids must leave home one day...",
             "Right! I must be strong.",
-            "The professor next door was looking for you."
+            "Professor CZ next door was looking for you."
           ]
         }
       },
@@ -52,7 +67,9 @@
     ]
   },
   "2": {
-    "requires": ["LOOKING_FOR_PROFESSOR"],
+    "requires": [
+      "LOOKING_FOR_PROFESSOR"
+    ],
     "events": [
       {
         "type": "ADD_NPC",
@@ -60,9 +77,23 @@
           "direction": "DOWN",
           "x": 20,
           "y": 62,
-          "frame": 40,
+          "frame": 8,
           "id": 1002,
-          "animationKeyPrefix": "NPC_5"
+          "animationKeyPrefix": "BINANCE_PROFESSOR",
+          "assetKey": "BINANCE_PROFESSOR",
+          "idleFrameConfig": {
+            "UP": 0,
+            "RIGHT": 4,
+            "DOWN": 8,
+            "LEFT": 12,
+            "NONE": 8
+          },
+          "origin": {
+            "x": 0,
+            "y": 0.27
+          },
+          "useSeparateLeftAnimations": true,
+          "scale": 1
         }
       },
       {
@@ -76,9 +107,9 @@
         "data": {
           "id": 1002,
           "messages": [
-            "Wait right there!",
+            "Professor CZ: Wait right there!",
             "Going into the wild grass is dangerous without your own partner.",
-            "Please take this Iguanignite..."
+            "Professor CZ: Please take this Iguanignite..."
           ]
         }
       },

@@ -184,6 +184,12 @@ export const NPC_EVENT_TYPE = Object.freeze({
  * @typedef NpcDetails
  * @type {object}
  * @property {number} frame
+ * @property {string} [assetKey]
+ * @property {import('../world/characters/character.js').CharacterIdleFrameConfig} [idleFrameConfig]
+ * @property {Coordinate} [origin]
+ * @property {number} [scale]
+ * @property {boolean} [useSeparateLeftAnimations]
+ * @property {string} [idleAnimationKey]
  * @property {string} animationKeyPrefix
  * @property {NpcEvent[]} events
  */
@@ -220,8 +226,14 @@ export const GAME_EVENT_TYPE = Object.freeze({
  * @property {number} data.x
  * @property {number} data.y
  * @property {number} data.frame
+ * @property {string} [data.assetKey]
  * @property {number} data.id
  * @property {string} data.animationKeyPrefix
+ * @property {import('../world/characters/character.js').CharacterIdleFrameConfig} [data.idleFrameConfig]
+ * @property {Coordinate} [data.origin]
+ * @property {number} [data.scale]
+ * @property {boolean} [data.useSeparateLeftAnimations]
+ * @property {string} [data.idleAnimationKey]
  */
 
 /**
@@ -247,6 +259,7 @@ export const GAME_EVENT_TYPE = Object.freeze({
  * @property {'TALK_TO_PLAYER'} type
  * @property {object} data
  * @property {number} data.id
+ * @property {import('../common/direction.js').Direction} [data.npcDirection]
  * @property {string[]} data.messages
  */
 

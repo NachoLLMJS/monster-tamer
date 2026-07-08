@@ -126,13 +126,14 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
+    const dataVersion = 'waterfront-man-idle-v6';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, 'assets/data/attacks.json');
-    this.load.json(DATA_ASSET_KEYS.ANIMATIONS, 'assets/data/animations.json');
+    this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ITEMS, 'assets/data/items.json');
     this.load.json(DATA_ASSET_KEYS.MONSTERS, 'assets/data/monsters.json');
     this.load.json(DATA_ASSET_KEYS.ENCOUNTERS, 'assets/data/encounters.json');
-    this.load.json(DATA_ASSET_KEYS.NPCS, 'assets/data/npcs.json');
-    this.load.json(DATA_ASSET_KEYS.EVENTS, 'assets/data/events.json');
+    this.load.json(DATA_ASSET_KEYS.NPCS, `assets/data/npcs.json?v=${dataVersion}`);
+    this.load.json(DATA_ASSET_KEYS.EVENTS, `assets/data/events.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.SIGNS, 'assets/data/signs.json');
 
     // load custom fonts
@@ -153,15 +154,26 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
+    const mainMapVersion = 'right-house-dev-collision-v24';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
     });
-    this.load.image(WORLD_ASSET_KEYS.MAIN_1_BACKGROUND, `${monsterTamerAssetPath}/map/main_1_level_background.png`);
-    this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.MAIN_1_LEVEL, `assets/data/main_1.json`);
+    this.load.image(
+      WORLD_ASSET_KEYS.MAIN_1_BACKGROUND,
+      `${monsterTamerAssetPath}/map/main_1_level_background.png?v=${mainMapVersion}`
+    );
+    this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.MAIN_1_LEVEL, `assets/data/main_1.json?v=${mainMapVersion}`);
     this.load.image(WORLD_ASSET_KEYS.WORLD_COLLISION, `${monsterTamerAssetPath}/map/collision.png`);
-    this.load.image(WORLD_ASSET_KEYS.MAIN_1_FOREGROUND, `${monsterTamerAssetPath}/map/main_1_level_foreground.png`);
+    this.load.image(
+      WORLD_ASSET_KEYS.MAIN_1_FOREGROUND,
+      `${monsterTamerAssetPath}/map/main_1_level_foreground.png?v=${mainMapVersion}`
+    );
     this.load.image(WORLD_ASSET_KEYS.WORLD_ENCOUNTER_ZONE, `${monsterTamerAssetPath}/map/encounter.png`);
+    this.load.spritesheet(WORLD_ASSET_KEYS.AC_FAN_SPIN, `${monsterTamerAssetPath}/map/ac-fan-spin.png?v=${mainMapVersion}`, {
+      frameWidth: 28,
+      frameHeight: 28,
+    });
     this.load.spritesheet(WORLD_ASSET_KEYS.BEACH, `${axulArtAssetPath}/beach/crushed.png`, {
       frameWidth: 64,
       frameHeight: 64,
@@ -199,10 +211,38 @@ export class PreloadScene extends BaseScene {
     this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.FOREST_1_LEVEL, `assets/data/forest_1.json`);
 
     // load character images
-    this.load.spritesheet(CHARACTER_ASSET_KEYS.PLAYER, `${axulArtAssetPath}/character/custom.png`, {
+    this.load.spritesheet(CHARACTER_ASSET_KEYS.PLAYER, 'assets/images/tameria/flap-hoodie-player.png', {
       frameWidth: 64,
       frameHeight: 88,
     });
+    this.load.spritesheet(CHARACTER_ASSET_KEYS.MOTHER, 'assets/images/tameria/bnb-mother.png', {
+      frameWidth: 64,
+      frameHeight: 88,
+    });
+    this.load.spritesheet(CHARACTER_ASSET_KEYS.INTRO_GIRL, 'assets/images/tameria/intro-girl.png', {
+      frameWidth: 64,
+      frameHeight: 88,
+    });
+    this.load.spritesheet(CHARACTER_ASSET_KEYS.BNB_RAPPER, 'assets/images/tameria/bnb-rapper-npc.png', {
+      frameWidth: 64,
+      frameHeight: 88,
+    });
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.BINANCE_PROFESSOR,
+      `assets/images/tameria/binance-professor.png?v=${dataVersion}`,
+      {
+        frameWidth: 64,
+        frameHeight: 88,
+      }
+    );
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.WATERFRONT_MAN,
+      `assets/images/tameria/waterfront-man-npc.png?v=${dataVersion}`,
+      {
+        frameWidth: 64,
+        frameHeight: 88,
+      }
+    );
     this.load.spritesheet(CHARACTER_ASSET_KEYS.NPC, `${pbGamesAssetPath}/characters.png`, {
       frameWidth: 16,
       frameHeight: 16,
@@ -256,7 +296,8 @@ export class PreloadScene extends BaseScene {
     // set global audio based on data manager settings
     setGlobalSoundSettings(this);
 
-    this.scene.start(SCENE_KEYS.TITLE_SCENE);
+    dataManager.startNewGame();
+    this.scene.start(SCENE_KEYS.WORLD_SCENE);
   }
 
   /**

@@ -134,18 +134,15 @@ export class Character {
       return;
     }
 
-    // stop current animation and show idle frame
-    const idleFrame = this._phaserGameObject.anims.currentAnim?.frames[1].frame.name;
+    // stop current animation and show the configured idle frame for the current direction.
+    // This keeps 3-frame legacy sheets working and lets 4-column sheets use column 0 as idle.
     this._phaserGameObject.anims.stop();
-    if (!idleFrame) {
-      return;
-    }
     switch (this._direction) {
       case DIRECTION.DOWN:
       case DIRECTION.LEFT:
       case DIRECTION.RIGHT:
       case DIRECTION.UP:
-        this._phaserGameObject.setFrame(idleFrame);
+        this._phaserGameObject.setFrame(this._getIdleFrame());
         break;
       case DIRECTION.NONE:
         break;

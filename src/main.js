@@ -1,8 +1,8 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js';
-import { BattleScene } from './scenes/battle-scene.js';
-import { WorldScene } from './scenes/world-scene.js';
+import { PreloadScene } from './scenes/preload-scene.js?v=right-house-dev-collision-v24';
+import { BattleScene } from './scenes/battle-scene.js?v=battle-background-fit-v1';
+import { WorldScene } from './scenes/world-scene.js?v=right-house-dev-collision-v24';
 import { TitleScene } from './scenes/title-scene.js';
 import { OptionsScene } from './scenes/options-scene.js';
 import { TestScene } from './scenes/test-scene.js';
@@ -12,13 +12,16 @@ import { InventoryScene } from './scenes/inventory-scene.js';
 import { CutsceneScene } from './scenes/cutscene-scene.js';
 import { DialogScene } from './scenes/dialog-scene.js';
 
+const BASE_GAME_HEIGHT = 576;
+const getGameWidthForViewport = () => Math.max(1024, Math.round(BASE_GAME_HEIGHT * (window.innerWidth / window.innerHeight)));
+
 const game = new Phaser.Game({
   type: Phaser.CANVAS,
   pixelArt: false,
   scale: {
     parent: 'game-container',
-    width: 1024,
-    height: 576,
+    width: getGameWidthForViewport(),
+    height: BASE_GAME_HEIGHT,
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },

@@ -5,7 +5,7 @@ import { DIRECTION } from '../common/direction.js';
 import { EnemyBattleMonster } from '../battle/monsters/enemy-battle-monster.js';
 import { PlayerBattleMonster } from '../battle/monsters/player-battle-monster.js';
 import { StateMachine } from '../utils/state-machine.js';
-import { Background } from '../battle/background.js';
+import { Background } from '../battle/background.js?v=battle-background-fit-v1';
 import { ATTACK_TARGET, AttackManager } from '../battle/attacks/attack-manager.js';
 import { createSceneTransition } from '../utils/scene-transition.js';
 import { DATA_MANAGER_STORE_KEYS, dataManager } from '../utils/data-manager.js';

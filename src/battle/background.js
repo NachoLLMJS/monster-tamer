@@ -16,10 +16,14 @@ export class Background {
     this.#backgroundGameObject = this.#scene.add
       .image(0, 0, BATTLE_BACKGROUND_ASSET_KEYS.FOREST, 0)
       .setOrigin(0)
+      .setDisplaySize(this.#scene.scale.width, this.#scene.scale.height)
       .setAlpha(0);
   }
 
   showForest() {
-    this.#backgroundGameObject.setTexture(BATTLE_BACKGROUND_ASSET_KEYS.FOREST).setAlpha(1);
+    this.#backgroundGameObject
+      .setTexture(BATTLE_BACKGROUND_ASSET_KEYS.FOREST)
+      .setDisplaySize(this.#scene.scale.width, this.#scene.scale.height)
+      .setAlpha(1);
   }
 }

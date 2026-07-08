@@ -1,29 +1,55 @@
 {
   "1": {
-    "frame": 30,
-    "animationKeyPrefix": "NPC_1",
+    "frame": 7,
+    "assetKey": "INTRO_GIRL",
+    "animationKeyPrefix": "INTRO_GIRL",
+    "idleFrameConfig": {
+      "DOWN": 7,
+      "UP": 1,
+      "NONE": 7,
+      "LEFT": 10,
+      "RIGHT": 4
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1,
     "events": [
       {
-        "requires": ["LOOKING_FOR_PROFESSOR"],
+        "requires": [
+          "LOOKING_FOR_PROFESSOR"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["The professor next door was looking for you."]
+          "messages": [
+            "Professor CZ next door was looking for you."
+          ]
         }
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["You should take a quick rest."]
+          "messages": [
+            "You should take a quick rest."
+          ]
         }
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
         "type": "HEAL",
         "data": {}
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
         "type": "SCENE_FADE_IN_AND_OUT",
         "data": {
           "fadeInDuration": 1000,
@@ -32,73 +58,132 @@
         }
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Oh good! You and your monsters are looking great!"]
+          "messages": [
+            "Oh good! You and your monsters are looking great!"
+          ]
         }
       }
-    ]
+    ],
+    "idleAnimationKey": "INTRO_GIRL_IDLE_DOWN"
   },
   "2": {
-    "frame": 20,
-    "animationKeyPrefix": "NPC_3",
+    "frame": 7,
+    "animationKeyPrefix": "BNB_RAPPER",
     "events": [
       {
-        "requires": ["LOOKING_FOR_PROFESSOR"],
+        "requires": [
+          "LOOKING_FOR_PROFESSOR"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I last saw the professor heading out of town."]
+          "messages": [
+            "I last saw Professor CZ heading out of town."
+          ]
         }
       },
       {
-        "requires": ["FOUND_PROFESSOR"],
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Make sure you read the signposts for helpful tips!"]
+          "messages": [
+            "Make sure you read the signposts for helpful tips!"
+          ]
         }
       }
-    ]
+    ],
+    "assetKey": "BNB_RAPPER",
+    "idleFrameConfig": {
+      "DOWN": 7,
+      "UP": 1,
+      "NONE": 7,
+      "LEFT": 10,
+      "RIGHT": 4
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
   },
   "3": {
-    "frame": 0,
-    "animationKeyPrefix": "NPC_1",
+    "frame": 8,
+    "animationKeyPrefix": "WATERFRONT_MAN",
     "events": [
       {
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["You can save your game from the menu.", "To open the menu, press the ENTER key."]
+          "messages": [
+            "You can save your game from the menu.",
+            "To open the menu, press the ENTER key."
+          ]
         }
       }
-    ]
+    ],
+    "assetKey": "WATERFRONT_MAN",
+    "idleAnimationKey": "WATERFRONT_MAN_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 0,
+      "RIGHT": 4,
+      "DOWN": 8,
+      "LEFT": 12,
+      "NONE": 8
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
   },
   "4": {
     "frame": 190,
     "animationKeyPrefix": "NPC_20",
     "events": [
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Hey! Let's battle!"]
+          "messages": [
+            "Hey! Let's battle!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "BATTLE",
         "data": {
-          "monsters": [7],
+          "monsters": [
+            7
+          ],
           "assetKey": "TRAINER_YOUTH_GIRL",
           "trainerName": "Jr. Trainer",
-          "trainerLostMessages": ["You defeated me!"]
+          "trainerLostMessages": [
+            "You defeated me!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_DEFEATED"],
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["That was great battle!"]
+          "messages": [
+            "That was great battle!"
+          ]
         }
       }
     ]
@@ -108,27 +193,41 @@
     "animationKeyPrefix": "NPC_19",
     "events": [
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Hey! Let's battle!"]
+          "messages": [
+            "Hey! Let's battle!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "BATTLE",
         "data": {
-          "monsters": [6],
+          "monsters": [
+            6
+          ],
           "assetKey": "TRAINER_YOUTH_BOY",
           "trainerName": "Jr. Trainer",
-          "trainerLostMessages": ["You are a strong trainer!"]
+          "trainerLostMessages": [
+            "You are a strong trainer!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_DEFEATED"],
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I'll have to get stronger."]
+          "messages": [
+            "I'll have to get stronger."
+          ]
         }
       }
     ]
@@ -141,7 +240,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["You should make sure to stock up on items."]
+          "messages": [
+            "You should make sure to stock up on items."
+          ]
         }
       }
     ]
@@ -154,7 +255,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I would stay out of the spooky forest."]
+          "messages": [
+            "I would stay out of the spooky forest."
+          ]
         }
       }
     ]
@@ -167,7 +270,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Make sure you heal your team before you head out!"]
+          "messages": [
+            "Make sure you heal your team before you head out!"
+          ]
         }
       }
     ]
@@ -177,27 +282,42 @@
     "animationKeyPrefix": "NPC_19",
     "events": [
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Hey! Let's battle!"]
+          "messages": [
+            "Hey! Let's battle!"
+          ]
         }
       },
       {
-        "requires": ["TRAINER_NOT_DEFEATED"],
+        "requires": [
+          "TRAINER_NOT_DEFEATED"
+        ],
         "type": "BATTLE",
         "data": {
-          "monsters": [6, 7],
+          "monsters": [
+            6,
+            7
+          ],
           "assetKey": "TRAINER_YOUTH_BOY",
           "trainerName": "Jr. Trainer",
-          "trainerLostMessages": ["I'll need to keep practicing."]
+          "trainerLostMessages": [
+            "I'll need to keep practicing."
+          ]
         }
       },
       {
-        "requires": ["TRAINER_DEFEATED"],
+        "requires": [
+          "TRAINER_DEFEATED"
+        ],
         "type": "MESSAGE",
         "data": {
-          "messages": ["I'll need to train before we battle again!"]
+          "messages": [
+            "I'll need to train before we battle again!"
+          ]
         }
       }
     ]
@@ -210,7 +330,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Feel free to rest here."]
+          "messages": [
+            "Feel free to rest here."
+          ]
         }
       },
       {
@@ -231,7 +353,9 @@
         "requires": [],
         "type": "MESSAGE",
         "data": {
-          "messages": ["Oh good! You and your monsters are looking great!"]
+          "messages": [
+            "Oh good! You and your monsters are looking great!"
+          ]
         }
       }
     ]
