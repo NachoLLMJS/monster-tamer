@@ -1,6 +1,6 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js?v=forest-spellborne-maxres-v8';
+import { PreloadScene } from './scenes/preload-scene.js?v=forest-spellborne-maxres-v9';
 import { BattleScene } from './scenes/battle-scene.js?v=chain-monsters-v5';
 import { WorldScene } from './scenes/world-scene.js?v=forest-spellborne-maxres-v8';
 import { TitleScene } from './scenes/title-scene.js';
