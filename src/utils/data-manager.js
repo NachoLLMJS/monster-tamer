@@ -186,6 +186,16 @@ class DataManager extends Phaser.Events.EventEmitter {
             idleAnimationKey: 'TRIVURN_BATTLE_IDLE',
           };
         }
+        if (monster.monsterId === 6) {
+          return {
+            ...monster,
+            name: 'Aethryx',
+            chainType: MONSTER_CHAIN_TYPE.ETHEREUM,
+            assetKey: 'AETHRYX',
+            attackIds: [4],
+            idleAnimationKey: 'AETHRYX_BATTLE_IDLE',
+          };
+        }
         return {
           ...monster,
           chainType: monster.monsterId === 2 ? MONSTER_CHAIN_TYPE.BNB : MONSTER_CHAIN_TYPE.LEGACY,
