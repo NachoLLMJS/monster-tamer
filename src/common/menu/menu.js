@@ -56,6 +56,7 @@ export class Menu {
 
     this.#graphics = this.#createGraphics();
     this.#container = this.#scene.add.container(0, 0, [this.#graphics]);
+    this.#container.setDepth(10000);
 
     // update menu container with menu options
     for (let i = 0; i < this.#availableMenuOptions.length; i += 1) {

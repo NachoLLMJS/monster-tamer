@@ -78,7 +78,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.image(
       BATTLE_ASSET_KEYS.TRAINER_YOUTH_GIRL,
-      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=chain-monsters-v4`
+      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=chain-monsters-v5`
     );
 
     // health bar assets
@@ -118,8 +118,15 @@ export class PreloadScene extends BaseScene {
 
     // monster assets
     const biloreAssetVersion = 'bilore-battle-idle-v1';
-    const rhovynAssetVersion = 'chain-monsters-v4';
-    this.load.image(MONSTER_ASSET_KEYS.CARNODUSK, `${monsterTamerAssetPath}/monsters/carnodusk.png`);
+    const rhovynAssetVersion = 'chain-monsters-v5';
+    this.load.spritesheet(
+      MONSTER_ASSET_KEYS.AETHRYX,
+      `${monsterTamerAssetPath}/monsters/aethryx-battle-idle.png?v=chain-monsters-v5`,
+      {
+        frameWidth: 256,
+        frameHeight: 256,
+      }
+    );
     this.load.spritesheet(
       MONSTER_ASSET_KEYS.BILORE,
       `${monsterTamerAssetPath}/monsters/bilore-battle-idle.png?v=${biloreAssetVersion}`,
@@ -138,7 +145,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.spritesheet(
       MONSTER_ASSET_KEYS.TORUSHELL,
-      `${monsterTamerAssetPath}/monsters/torushell-battle-idle.png?v=chain-monsters-v4`,
+      `${monsterTamerAssetPath}/monsters/torushell-battle-idle.png?v=chain-monsters-v5`,
       {
         frameWidth: 256,
         frameHeight: 256,
@@ -146,7 +153,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.spritesheet(
       MONSTER_ASSET_KEYS.TRIVURN,
-      `${monsterTamerAssetPath}/monsters/trivurn-battle-idle.png?v=chain-monsters-v4`,
+      `${monsterTamerAssetPath}/monsters/trivurn-battle-idle.png?v=chain-monsters-v5`,
       {
         frameWidth: 256,
         frameHeight: 256,
@@ -154,7 +161,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.spritesheet(
       MONSTER_ASSET_KEYS.TRILUMA,
-      `${monsterTamerAssetPath}/monsters/triluma-battle-idle.png?v=chain-monsters-v4`,
+      `${monsterTamerAssetPath}/monsters/triluma-battle-idle.png?v=chain-monsters-v5`,
       {
         frameWidth: 256,
         frameHeight: 256,
@@ -174,7 +181,7 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
-    const dataVersion = 'chain-monsters-v4';
+    const dataVersion = 'chain-monsters-v5';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, `assets/data/attacks.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ITEMS, `assets/data/items.json?v=${dataVersion}`);
@@ -202,7 +209,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'chain-monsters-v4';
+    const mainMapVersion = 'chain-monsters-v5';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
@@ -254,10 +261,13 @@ export class PreloadScene extends BaseScene {
     );
     this.load.tilemapTiledJSON(BUILDING_ASSET_KEYS.BUILDING_2_LEVEL, `assets/data/building_2.json`);
 
-    this.load.image(WORLD_ASSET_KEYS.FOREST_1_BACKGROUND, `${monsterTamerAssetPath}/map/forest_1_level_background.png`);
+    this.load.image(
+      WORLD_ASSET_KEYS.FOREST_1_BACKGROUND,
+      `${monsterTamerAssetPath}/map/forest_1_level_background.png?v=forest-spellborne-maxres-v8`
+    );
     this.load.image(
       WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED,
-      `${monsterTamerAssetPath}/map/forest_1_level_background_cleared.png?v=${dataVersion}`
+      `${monsterTamerAssetPath}/map/forest_1_level_background_cleared.png?v=forest-spellborne-maxres-v8`
     );
     this.load.image(WORLD_ASSET_KEYS.FOREST_1_FOREGROUND, `${monsterTamerAssetPath}/map/forest_1_level_foreground.png`);
     this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.FOREST_1_LEVEL, `assets/data/forest_1.json`);

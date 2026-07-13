@@ -1,4 +1,4 @@
-import { Menu } from '../common/menu/menu.js';
+import { Menu } from '../common/menu/menu.js?v=character-depth-v1';
 
 /**
  * @typedef {keyof typeof MENU_OPTIONS} MenuOptions

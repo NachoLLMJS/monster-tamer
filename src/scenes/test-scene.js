@@ -43,7 +43,7 @@ export class TestScene extends Phaser.Scene {
     background.showForest();
 
     this.#playerMonster = this.add.image(256, 316, MONSTER_ASSET_KEYS.RHOVYN, 0).setFlipX(true);
-    this.#enemyMonster = this.add.image(768, 144, MONSTER_ASSET_KEYS.CARNODUSK, 0).setFlipX(false);
+    this.#enemyMonster = this.add.image(768, 144, MONSTER_ASSET_KEYS.AETHRYX, 0).setFlipX(false);
     makeDraggable(this.#enemyMonster);
 
     this.#iceShardAttack = new IceShard(this, { x: 256, y: 344 });

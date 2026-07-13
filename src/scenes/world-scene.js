@@ -1,7 +1,7 @@
 import Phaser from '../lib/phaser.js';
 import { AUDIO_ASSET_KEYS, WORLD_ASSET_KEYS } from '../assets/asset-keys.js';
 import { SCENE_KEYS } from './scene-keys.js';
-import { Player } from '../world/characters/player.js';
+import { Player } from '../world/characters/player.js?v=character-depth-v1';
 import { DIRECTION } from '../common/direction.js';
 import { ENABLE_ZONE_DEBUGGING, TILED_COLLISION_LAYER_ALPHA, TILE_SIZE } from '../config.js';
 import { DATA_MANAGER_STORE_KEYS, dataManager } from '../utils/data-manager.js';
@@ -11,8 +11,8 @@ import {
   getTargetPositionFromGameObjectPositionAndDirection,
 } from '../utils/grid-utils.js';
 import { CANNOT_READ_SIGN_TEXT, SAMPLE_TEXT } from '../utils/text-utils.js';
-import { NPC, NPC_MOVEMENT_PATTERN } from '../world/characters/npc.js?v=directional-idle-v2';
-import { WorldMenu } from '../world/world-menu.js';
+import { NPC, NPC_MOVEMENT_PATTERN } from '../world/characters/npc.js?v=character-depth-v1';
+import { WorldMenu } from '../world/world-menu.js?v=character-depth-v1';
 import { QuestTracker } from '../world/quest-tracker.js';
 import { STORY_FLAGS } from '../world/story-flags.js';
 import { BaseScene } from './base-scene.js';
@@ -55,6 +55,13 @@ const RIGHT_HOUSE_AC_FAN_POSITIONS = Object.freeze([
 ]);
 const DEV_COLLISION_GID = 189;
 const DEV_NO_POKEMONS_STORAGE_KEY = 'tameriaDevNoPokemons';
+const DEV_MAP_OPTIONS = Object.freeze([
+  { area: 'main_1', label: 'Tameria', isInterior: false, position: { x: 896, y: 4736 } },
+  { area: 'forest_1', label: 'Bosque / Rocas', isInterior: false, position: { x: 576, y: 640 } },
+  { area: 'building_1', label: 'Centro de curación', isInterior: true, position: { x: 320, y: 448 } },
+  { area: 'building_2', label: 'Casa vecina', isInterior: true, position: { x: 320, y: 448 } },
+  { area: 'building_3', label: 'Tienda', isInterior: true, position: { x: 320, y: 448 } },
+]);
 
 export class WorldScene extends BaseScene {
   /** @type {Player} */
@@ -264,15 +271,24 @@ export class WorldScene extends BaseScene {
     this.#createEncounterAreas(map);
 
     if (!this.#sceneData.isInterior) {
-      this.cameras.main.setBounds(0, 0, 2560, 5184);
+      this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+      const minimumMapCoverZoom = Math.max(
+        this.scale.width / map.widthInPixels,
+        this.scale.height / map.heightInPixels
+      );
+      this.cameras.main.setZoom(Math.max(0.8, minimumMapCoverZoom));
+    } else {
+      this.cameras.main.setZoom(0.8);
     }
-    this.cameras.main.setZoom(0.8);
     const forestRocksCleared =
       this.#sceneData.area === 'forest_1' && dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED);
     const backgroundKey = forestRocksCleared
       ? WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED
       : `${this.#sceneData.area.toUpperCase()}_BACKGROUND`;
-    this.#backgroundImage = this.add.image(0, 0, backgroundKey, 0).setOrigin(0);
+    this.#backgroundImage = this.add
+      .image(0, 0, backgroundKey, 0)
+      .setOrigin(0)
+      .setDisplaySize(map.widthInPixels, map.heightInPixels);
     if (forestRocksCleared) {
       for (let x = 7; x <= 11; x += 1) {
         this.#collisionLayer.removeTileAt(x, 0);
@@ -659,7 +675,7 @@ export class WorldScene extends BaseScene {
           return;
         }
         if (child.x === this.#player.sprite.x && child.y === this.#player.sprite.y) {
-          child.visible = true;
+          child.setDepth(this.#player.sprite.depth + 1).setVisible(true);
           return;
         }
         child.active = false;
@@ -1421,7 +1437,8 @@ export class WorldScene extends BaseScene {
           .getFirstDead(true, encounterTile.pixelX, encounterTile.pixelY, WORLD_ASSET_KEYS.GRASS, 1, true)
           .setOrigin(0)
           .setVisible(true)
-          .setActive(true);
+          .setActive(true)
+          .setDepth(this.#player.sprite.depth + 1);
         // if player is moving up or down, don't show grass so they don't appear to be moving under it, will show after they reach the destination
         if (playerDirection === DIRECTION.DOWN || playerDirection === DIRECTION.UP) {
           object.visible = false;
@@ -1467,12 +1484,6 @@ export class WorldScene extends BaseScene {
    * @returns {void}
    */
   #createDevCollisionEditor(collisionLayer, map) {
-    const normalizedArea = this.#sceneData.area?.toUpperCase();
-    const isMainMap = normalizedArea === 'MAIN_1' || normalizedArea === WORLD_ASSET_KEYS.MAIN_1_LEVEL;
-    if (!isMainMap) {
-      return;
-    }
-
     const editorGrid = Array.from({ length: map.height }, (_row, y) =>
       Array.from({ length: map.width }, (_col, x) => {
         const tile = collisionLayer.getTileAt(x, y);
@@ -1660,7 +1671,7 @@ export class WorldScene extends BaseScene {
           }
         : null;
       const patch = {
-        map: 'main_1.json',
+        map: `${this.#sceneData.area}.json`,
         layer: 'Collision',
         collisionGid: DEV_COLLISION_GID,
         exportType: 'snapshot-v4-stable-grid',
@@ -1785,9 +1796,79 @@ export class WorldScene extends BaseScene {
       updateNoPokemonsButton();
       this.game.canvas.focus();
     });
+
+    const changeMapButton = document.createElement('button');
+    changeMapButton.textContent = 'CHANGE MAP';
+    changeMapButton.style.position = 'fixed';
+    changeMapButton.style.right = '12px';
+    changeMapButton.style.top = '96px';
+    changeMapButton.style.zIndex = '999999';
+    changeMapButton.style.padding = '8px 10px';
+    changeMapButton.style.font = '700 12px monospace';
+    changeMapButton.style.color = '#ffffff';
+    changeMapButton.style.background = '#111827';
+    changeMapButton.style.border = '2px solid #f59e0b';
+    changeMapButton.style.borderRadius = '6px';
+    changeMapButton.style.cursor = 'pointer';
+    changeMapButton.title = 'Teleportarse a otro mapa';
+    document.body.appendChild(changeMapButton);
+
+    const mapPanel = document.createElement('div');
+    mapPanel.style.position = 'fixed';
+    mapPanel.style.right = '12px';
+    mapPanel.style.top = '138px';
+    mapPanel.style.zIndex = '999999';
+    mapPanel.style.display = 'none';
+    mapPanel.style.gap = '6px';
+    mapPanel.style.padding = '8px';
+    mapPanel.style.background = '#111827';
+    mapPanel.style.border = '2px solid #f59e0b';
+    mapPanel.style.borderRadius = '6px';
+
+    const mapSelect = document.createElement('select');
+    mapSelect.style.padding = '6px';
+    mapSelect.style.font = '700 12px monospace';
+    DEV_MAP_OPTIONS.forEach((option) => {
+      const element = document.createElement('option');
+      element.value = option.area;
+      element.textContent = option.label;
+      element.selected = option.area === this.#sceneData.area;
+      mapSelect.appendChild(element);
+    });
+
+    const teleportButton = document.createElement('button');
+    teleportButton.textContent = 'TELEPORT';
+    teleportButton.style.padding = '6px 8px';
+    teleportButton.style.font = '700 12px monospace';
+    teleportButton.style.color = '#ffffff';
+    teleportButton.style.background = '#166534';
+    teleportButton.style.border = '1px solid #86efac';
+    teleportButton.style.borderRadius = '4px';
+    teleportButton.style.cursor = 'pointer';
+    mapPanel.append(mapSelect, teleportButton);
+    document.body.appendChild(mapPanel);
+
+    changeMapButton.addEventListener('click', () => {
+      mapPanel.style.display = mapPanel.style.display === 'none' ? 'flex' : 'none';
+    });
+    teleportButton.addEventListener('click', () => {
+      const destination = DEV_MAP_OPTIONS.find((option) => option.area === mapSelect.value);
+      if (!destination) {
+        return;
+      }
+      this._controls.lockInput = true;
+      dataManager.store.set(DATA_MANAGER_STORE_KEYS.PLAYER_POSITION, { ...destination.position });
+      dataManager.store.set(DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION, DIRECTION.UP);
+      this.scene.start(SCENE_KEYS.WORLD_SCENE, {
+        area: destination.area,
+        isInterior: destination.isInterior,
+      });
+    });
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       devButton.remove();
       noPokemonsButton.remove();
+      changeMapButton.remove();
+      mapPanel.remove();
     });
 
     const handleDevKey = (event) => {

@@ -1,13 +1,13 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js?v=chain-monsters-v4';
-import { BattleScene } from './scenes/battle-scene.js?v=chain-monsters-v4';
-import { WorldScene } from './scenes/world-scene.js?v=chain-monsters-v4';
+import { PreloadScene } from './scenes/preload-scene.js?v=forest-spellborne-maxres-v8';
+import { BattleScene } from './scenes/battle-scene.js?v=chain-monsters-v5';
+import { WorldScene } from './scenes/world-scene.js?v=forest-spellborne-maxres-v8';
 import { TitleScene } from './scenes/title-scene.js';
 import { OptionsScene } from './scenes/options-scene.js';
-import { TestScene } from './scenes/test-scene.js?v=chain-monsters-v4';
+import { TestScene } from './scenes/test-scene.js?v=chain-monsters-v5';
 import { MonsterPartyScene } from './scenes/monster-party-scene.js';
-import { MonsterDetailsScene } from './scenes/monster-details-scene.js?v=chain-monsters-v4';
+import { MonsterDetailsScene } from './scenes/monster-details-scene.js?v=chain-monsters-v5';
 import { InventoryScene } from './scenes/inventory-scene.js';
 import { CutsceneScene } from './scenes/cutscene-scene.js';
 import { DialogScene } from './scenes/dialog-scene.js';
@@ -17,7 +17,7 @@ const getGameWidthForViewport = () => Math.max(1024, Math.round(BASE_GAME_HEIGHT
 
 const game = new Phaser.Game({
   type: Phaser.CANVAS,
-  pixelArt: false,
+  pixelArt: true,
   scale: {
     parent: 'game-container',
     width: getGameWidthForViewport(),

@@ -82,7 +82,8 @@ export class Character {
     this._otherCharactersToCheckForCollisionsWith = config.otherCharactersToCheckForCollisionsWith || [];
     this._phaserGameObject = this._scene.add
       .sprite(config.position.x, config.position.y, config.assetKey, this._getIdleFrame())
-      .setOrigin(this._origin.x, this._origin.y);
+      .setOrigin(this._origin.x, this._origin.y)
+      .setDepth(config.position.y);
     this._spriteGridMovementFinishedCallback = config.spriteGridMovementFinishedCallback;
     this._spriteChangedDirectionCallback = config.spriteChangedDirectionCallback;
     this._objectsToCheckForCollisionsWith = config.objectsToCheckForCollisionsWith || [];
@@ -233,6 +234,9 @@ export class Character {
         to: this._targetPosition.x,
       },
       targets: this._phaserGameObject,
+      onUpdate: () => {
+        this._phaserGameObject.setDepth(this._phaserGameObject.y);
+      },
       onComplete: () => {
         this._isMoving = false;
         this._isRunning = false;

@@ -131,5 +131,24 @@
     "baseExp": 41,
     "currentExp": 27,
     "idleAnimationKey": "BILORE_BATTLE_IDLE"
+  },
+  {
+    "id": "8",
+    "monsterId": 6,
+    "name": "Aethryx",
+    "chainType": "ETHEREUM",
+    "assetKey": "AETHRYX",
+    "assetFrame": 0,
+    "currentHp": 15,
+    "maxHp": 15,
+    "attackIds": [
+      4
+    ],
+    "baseAttack": 3,
+    "currentAttack": 3,
+    "currentLevel": 3,
+    "baseExp": 42,
+    "currentExp": 27,
+    "idleAnimationKey": "AETHRYX_BATTLE_IDLE"
   }
 ]

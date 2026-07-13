@@ -16,5 +16,11 @@
     "name": "magma claw",
     "animationName": "SLASH",
     "audioKey": "CLAW"
+  },
+  {
+    "id": 4,
+    "name": "aether prism",
+    "animationName": "ICE_SHARD",
+    "audioKey": "ICE"
   }
 ]

@@ -13,7 +13,9 @@ all-game-assets.zip
 .vercel
 
 # local generation sources and ad-hoc verification artifacts
+/.hermes/
 /tools/sources/
 /tools/__pycache__/
+/tools/generate_aethryx_monster.py
 /tmp_*.png
 /assets/data/*.bak-*

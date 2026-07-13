@@ -1,5 +1,5 @@
 import Phaser from '../../lib/phaser.js';
-import { Character } from './character.js';
+import { Character } from './character.js?v=character-depth-v1';
 import { CHARACTER_ASSET_KEYS } from '../../assets/asset-keys.js';
 import { DIRECTION } from '../../common/direction.js';
 import { exhaustiveGuard } from '../../utils/guard.js';
