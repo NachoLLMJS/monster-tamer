@@ -1,6 +1,6 @@
 /** @type {import('../types/typedef.js').Coordinate} */
 const ENEMY_POSITION = Object.freeze({
-  x: 768,
+  x: 800,
   y: 176,
 });
 

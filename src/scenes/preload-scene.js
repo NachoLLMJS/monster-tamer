@@ -68,8 +68,18 @@ export class PreloadScene extends BaseScene {
     this.load.image(BATTLE_ASSET_KEYS.HEALTH_BAR_BACKGROUND, `${kenneysAssetPath}/ui-space-expansion/custom-ui.png`);
     this.load.image(BATTLE_ASSET_KEYS.BALL_THUMBNAIL, `${monsterTamerAssetPath}/battle/cosmoball.png`);
     this.load.image(BATTLE_ASSET_KEYS.DAMAGED_BALL, `${monsterTamerAssetPath}/battle/damagedBall.png`);
-    this.load.image(BATTLE_ASSET_KEYS.TRAINER_YOUTH_BOY, `${monsterTamerAssetPath}/battle/trainer_youth_boy.png`);
-    this.load.image(BATTLE_ASSET_KEYS.TRAINER_YOUTH_GIRL, `${monsterTamerAssetPath}/battle/trainer_youth_girl.png`);
+    this.load.image(
+      BATTLE_ASSET_KEYS.TRAINER_YOUTH_BOY,
+      `${monsterTamerAssetPath}/battle/trainer_youth_boy_green_pirate.png?v=green-pirate-trainer-v1`
+    );
+    this.load.image(
+      BATTLE_ASSET_KEYS.TRAINER_YOUTH_BOY_GREEN_RIVAL,
+      `${monsterTamerAssetPath}/battle/trainer_youth_boy_green_rival.png?v=remaining-characters-v1`
+    );
+    this.load.image(
+      BATTLE_ASSET_KEYS.TRAINER_YOUTH_GIRL,
+      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=story-idle-rockbreaker-v3`
+    );
 
     // health bar assets
     this.load.image(
@@ -135,10 +145,10 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
-    const dataVersion = 'bilore-battle-idle-v1';
+    const dataVersion = 'story-idle-rockbreaker-v3';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, 'assets/data/attacks.json');
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
-    this.load.json(DATA_ASSET_KEYS.ITEMS, 'assets/data/items.json');
+    this.load.json(DATA_ASSET_KEYS.ITEMS, `assets/data/items.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.MONSTERS, `assets/data/monsters.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ENCOUNTERS, 'assets/data/encounters.json');
     this.load.json(DATA_ASSET_KEYS.NPCS, `assets/data/npcs.json?v=${dataVersion}`);
@@ -163,7 +173,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'normal-map-only-v39';
+    const mainMapVersion = 'story-idle-rockbreaker-v3';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
@@ -216,6 +226,10 @@ export class PreloadScene extends BaseScene {
     this.load.tilemapTiledJSON(BUILDING_ASSET_KEYS.BUILDING_2_LEVEL, `assets/data/building_2.json`);
 
     this.load.image(WORLD_ASSET_KEYS.FOREST_1_BACKGROUND, `${monsterTamerAssetPath}/map/forest_1_level_background.png`);
+    this.load.image(
+      WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED,
+      `${monsterTamerAssetPath}/map/forest_1_level_background_cleared.png?v=${dataVersion}`
+    );
     this.load.image(WORLD_ASSET_KEYS.FOREST_1_FOREGROUND, `${monsterTamerAssetPath}/map/forest_1_level_foreground.png`);
     this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.FOREST_1_LEVEL, `assets/data/forest_1.json`);
 
@@ -232,10 +246,14 @@ export class PreloadScene extends BaseScene {
       frameWidth: 64,
       frameHeight: 88,
     });
-    this.load.spritesheet(CHARACTER_ASSET_KEYS.BNB_RAPPER, 'assets/images/tameria/bnb-rapper-npc.png', {
-      frameWidth: 64,
-      frameHeight: 88,
-    });
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.BNB_RAPPER,
+      `assets/images/tameria/bnb-rapper-npc.png?v=${dataVersion}`,
+      {
+        frameWidth: 64,
+        frameHeight: 88,
+      }
+    );
     this.load.spritesheet(
       CHARACTER_ASSET_KEYS.BINANCE_PROFESSOR,
       `assets/images/tameria/binance-professor.png?v=${dataVersion}`,
@@ -247,6 +265,35 @@ export class PreloadScene extends BaseScene {
     this.load.spritesheet(
       CHARACTER_ASSET_KEYS.WATERFRONT_MAN,
       `assets/images/tameria/waterfront-man-npc.png?v=${dataVersion}`,
+      {
+        frameWidth: 64,
+        frameHeight: 88,
+      }
+    );
+    const remainingCharacterSheets = [
+      [CHARACTER_ASSET_KEYS.ITEM_MERCHANT_NPC, 'item-merchant-npc.png'],
+      [CHARACTER_ASSET_KEYS.FOREST_RANGER_NPC, 'forest-ranger-npc.png'],
+      [CHARACTER_ASSET_KEYS.FIELD_NURSE_NPC, 'field-nurse-npc.png'],
+      [CHARACTER_ASSET_KEYS.GREEN_RIVAL_TRAINER, 'green-rival-trainer.png'],
+      [CHARACTER_ASSET_KEYS.INN_HEALER_NPC, 'inn-healer-npc.png'],
+    ];
+    remainingCharacterSheets.forEach(([assetKey, fileName]) => {
+      this.load.spritesheet(assetKey, `assets/images/tameria/${fileName}?v=${dataVersion}`, {
+        frameWidth: 64,
+        frameHeight: 88,
+      });
+    });
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.ROBINHOOD_JR_TRAINER,
+      `assets/images/tameria/lime-techwear-jr-trainer.png?v=${dataVersion}`,
+      {
+        frameWidth: 64,
+        frameHeight: 88,
+      }
+    );
+    this.load.spritesheet(
+      CHARACTER_ASSET_KEYS.GREEN_PIRATE_JR_TRAINER,
+      `assets/images/tameria/green-pirate-jr-trainer.png?v=${dataVersion}`,
       {
         frameWidth: 64,
         frameHeight: 88,

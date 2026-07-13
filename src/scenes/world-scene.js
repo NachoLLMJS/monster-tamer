@@ -11,8 +11,10 @@ import {
   getTargetPositionFromGameObjectPositionAndDirection,
 } from '../utils/grid-utils.js';
 import { CANNOT_READ_SIGN_TEXT, SAMPLE_TEXT } from '../utils/text-utils.js';
-import { NPC, NPC_MOVEMENT_PATTERN } from '../world/characters/npc.js';
+import { NPC, NPC_MOVEMENT_PATTERN } from '../world/characters/npc.js?v=directional-idle-v2';
 import { WorldMenu } from '../world/world-menu.js';
+import { QuestTracker } from '../world/quest-tracker.js';
+import { STORY_FLAGS } from '../world/story-flags.js';
 import { BaseScene } from './base-scene.js';
 import { DataUtils } from '../utils/data-utils.js';
 import { playBackgroundMusic, playSoundFx } from '../utils/audio-utils.js';
@@ -73,6 +75,12 @@ export class WorldScene extends BaseScene {
   #npcPlayerIsInteractingWith;
   /** @type {WorldMenu} */
   #menu;
+  /** @type {QuestTracker | undefined} */
+  #questTracker;
+  /** @type {Phaser.Tilemaps.TilemapLayer | undefined} */
+  #collisionLayer;
+  /** @type {Phaser.GameObjects.Image | undefined} */
+  #backgroundImage;
   /** @type {WorldSceneData} */
   #sceneData;
   /** @type {Item[]} */
@@ -207,6 +215,9 @@ export class WorldScene extends BaseScene {
     this.#specialEncounterTileImageGameObjectGroup = undefined;
     this.#encounterZonePlayerIsEntering = undefined;
     this.#cameraRegions = [];
+    this.#questTracker = undefined;
+    this.#collisionLayer = undefined;
+    this.#backgroundImage = undefined;
   }
 
   /**
@@ -229,13 +240,13 @@ export class WorldScene extends BaseScene {
       console.log(`[${WorldScene.name}:create] encountered error while creating collision tiles from tiled`);
       return;
     }
-    const collisionLayer = map.createLayer('Collision', collisionTiles, 0, 0);
-    if (!collisionLayer) {
+    this.#collisionLayer = map.createLayer('Collision', collisionTiles, 0, 0);
+    if (!this.#collisionLayer) {
       console.log(`[${WorldScene.name}:create] encountered error while creating collision layer using data from tiled`);
       return;
     }
-    collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2);
-    this.#createDevCollisionEditor(collisionLayer, map);
+    this.#collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2);
+    this.#createDevCollisionEditor(this.#collisionLayer, map);
 
     // create interactive layer
     const hasSignLayer = map.getObjectLayer(OBJECT_LAYER_NAMES.SIGN) !== null;
@@ -256,11 +267,26 @@ export class WorldScene extends BaseScene {
       this.cameras.main.setBounds(0, 0, 2560, 5184);
     }
     this.cameras.main.setZoom(0.8);
-    this.add.image(0, 0, `${this.#sceneData.area.toUpperCase()}_BACKGROUND`, 0).setOrigin(0);
+    const forestRocksCleared =
+      this.#sceneData.area === 'forest_1' && dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED);
+    const backgroundKey = forestRocksCleared
+      ? WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED
+      : `${this.#sceneData.area.toUpperCase()}_BACKGROUND`;
+    this.#backgroundImage = this.add.image(0, 0, backgroundKey, 0).setOrigin(0);
+    if (forestRocksCleared) {
+      for (let x = 7; x <= 11; x += 1) {
+        this.#collisionLayer.removeTileAt(x, 0);
+      }
+    }
     this.#createMainMapAnimatedDetails();
 
     // create items and collisions
     this.#createItems(map);
+    if (this.#sceneData.area === 'forest_1') {
+      for (let boundaryX = 7; boundaryX <= 11; boundaryX += 1) {
+        this.#items.push({ position: { x: boundaryX * TILE_SIZE, y: -TILE_SIZE }, isBoundary: true });
+      }
+    }
 
     // create npcs
     this.#createNPCs(map);
@@ -270,7 +296,7 @@ export class WorldScene extends BaseScene {
       scene: this,
       position: dataManager.store.get(DATA_MANAGER_STORE_KEYS.PLAYER_POSITION),
       direction: dataManager.store.get(DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION),
-      collisionLayer: collisionLayer,
+      collisionLayer: this.#collisionLayer,
       spriteGridMovementFinishedCallback: () => {
         this.#handlePlayerMovementUpdate();
       },
@@ -300,8 +326,10 @@ export class WorldScene extends BaseScene {
 
     // Foreground overlay intentionally disabled: the game uses only the normal map image.
 
-    // create menu
+    // create menu and persistent story objective tracker
     this.#menu = new WorldMenu(this);
+    this.#questTracker = new QuestTracker(this);
+    this.#questTracker.sync();
 
     // create event zones
     this.#createEventEncounterZones(map);
@@ -419,7 +447,7 @@ export class WorldScene extends BaseScene {
           /** @type {import('./inventory-scene.js').InventorySceneData} */
           const sceneDataToPass = {
             previousSceneName: SCENE_KEYS.WORLD_SCENE,
-            itemCategoriesThatCannotBeUsed: [ITEM_CATEGORY.CAPTURE],
+            itemCategoriesThatCannotBeUsed: [ITEM_CATEGORY.CAPTURE, ITEM_CATEGORY.KEY],
           };
           this.scene.launch(SCENE_KEYS.INVENTORY_SCENE, sceneDataToPass);
           this.scene.pause(SCENE_KEYS.WORLD_SCENE);
@@ -471,6 +499,33 @@ export class WorldScene extends BaseScene {
     const { x, y } = this.#player.sprite;
     const targetPosition = getTargetPositionFromGameObjectPositionAndDirection({ x, y }, this.#player.direction);
 
+    const isForestRockGate =
+      this.#sceneData.area === 'forest_1' &&
+      targetPosition.y === 0 &&
+      targetPosition.x >= 7 * TILE_SIZE &&
+      targetPosition.x <= 11 * TILE_SIZE;
+    if (isForestRockGate && !dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED)) {
+      if (!dataManager.getFlags().has(STORY_FLAGS.HAS_ROCK_BREAKER)) {
+        this.#dialogUi.showDialogModal([
+          'Estas rocas bloquean la salida norte.',
+          'Necesitas el Romperrocas. El comerciante de objetos de Tameria puede ayudarte.',
+        ]);
+        return;
+      }
+
+      dataManager.addFlag(STORY_FLAGS.ROCKS_CLEARED);
+      for (let rockX = 7; rockX <= 11; rockX += 1) {
+        this.#collisionLayer?.removeTileAt(rockX, 0);
+      }
+      this.#backgroundImage?.setTexture(WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED);
+      this.#questTracker?.sync({ animateCompletion: true });
+      this.#dialogUi.showDialogModal([
+        'Usaste el Romperrocas.',
+        'La barrera se ha derrumbado. La salida norte está abierta.',
+      ]);
+      return;
+    }
+
     // check for sign, and display appropriate message if player is not facing up
     const nearbySign = this.#signLayer?.objects.find((object) => {
       if (!object.x || !object.y) {
@@ -511,6 +566,9 @@ export class WorldScene extends BaseScene {
     // check for a nearby item and display message about player finding the item
     let nearbyItemIndex;
     const nearbyItem = this.#items.find((item, index) => {
+      if (item.isBoundary) {
+        return false;
+      }
       if (item.position.x === targetPosition.x && item.position.y === targetPosition.y) {
         nearbyItemIndex = index;
         return true;
@@ -845,6 +903,7 @@ export class WorldScene extends BaseScene {
       this.#npcPlayerIsInteractingWith = undefined;
       this.#lastNpcEventHandledIndex = -1;
       this.#isProcessingNpcEvent = false;
+      this.#questTracker?.sync({ animateCompletion: true });
       return;
     }
 
@@ -865,7 +924,8 @@ export class WorldScene extends BaseScene {
 
       return currentGameFlags.has(flag);
     });
-    if (!eventRequirementsMet) {
+    const eventExclusionsMet = (eventToHandle.excludes || []).every((flag) => !currentGameFlags.has(flag));
+    if (!eventRequirementsMet || !eventExclusionsMet) {
       // jump to next event
       this.#handleNpcInteraction();
       return;
@@ -899,6 +959,16 @@ export class WorldScene extends BaseScene {
           });
         });
         // TODO:future play audio cue
+        break;
+      case NPC_EVENT_TYPE.GIVE_ITEM: {
+        const item = DataUtils.getItem(this, eventToHandle.data.itemId);
+        dataManager.addItem(item, eventToHandle.data.quantity || 1);
+        this.#handleNpcInteraction();
+        break;
+      }
+      case NPC_EVENT_TYPE.ADD_FLAG:
+        dataManager.addFlag(eventToHandle.data.flag);
+        this.#handleNpcInteraction();
         break;
       case NPC_EVENT_TYPE.BATTLE:
         this.#isProcessingNpcEvent = true;
@@ -1008,6 +1078,7 @@ export class WorldScene extends BaseScene {
       this.#lastCutSceneEventHandledIndex = -1;
       this.#isProcessingCutSceneEvent = false;
       dataManager.viewedEvent(this.#currentCutSceneId);
+      this.#questTracker?.sync({ animateCompletion: true });
       this.#eventZones[this.#currentCutSceneId].destroy();
       delete this.#eventZones[this.#currentCutSceneId];
       if (ENABLE_ZONE_DEBUGGING) {

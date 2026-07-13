@@ -11,3 +11,9 @@ node_modules
 all-game-assets.zip
 /dist
 .vercel
+
+# local generation sources and ad-hoc verification artifacts
+/tools/sources/
+/tools/__pycache__/
+/tmp_*.png
+/assets/data/*.bak-*

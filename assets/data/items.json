@@ -12,5 +12,12 @@
     "description": "A damaged ball that can be used for capturing monsters.",
     "category": "CAPTURE",
     "effect": "CAPTURE_1"
+  },
+  {
+    "id": 3,
+    "name": "Romperrocas",
+    "description": "Herramienta clave entregada por el comerciante. Rompe barreras de roca en el bosque.",
+    "category": "KEY",
+    "effect": "NONE"
   }
 ]

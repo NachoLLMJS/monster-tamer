@@ -2,7 +2,7 @@ import Phaser from '../lib/phaser.js';
 import { BattleMenu } from '../battle/ui/menu/battle-menu.js';
 import { SCENE_KEYS } from './scene-keys.js';
 import { DIRECTION } from '../common/direction.js';
-import { EnemyBattleMonster } from '../battle/monsters/enemy-battle-monster.js?v=bilore-battle-idle-v1';
+import { EnemyBattleMonster } from '../battle/monsters/enemy-battle-monster.js?v=enemy-right-v2';
 import { PlayerBattleMonster } from '../battle/monsters/player-battle-monster.js?v=bilore-battle-idle-v1';
 import { StateMachine } from '../utils/state-machine.js';
 import { Background } from '../battle/background.js?v=battle-background-fit-v1';
@@ -21,7 +21,7 @@ import { Ball } from '../battle/ball.js';
 import { sleep } from '../utils/time-utils.js';
 import { generateUuid } from '../utils/random.js';
 import { calculateMonsterCaptureResults } from '../utils/catch-utils.js';
-import { EnemyBattleNpc } from '../battle/enemy-battle-npc.js';
+import { EnemyBattleNpc } from '../battle/enemy-battle-npc.js?v=enemy-right-v2';
 
 const BATTLE_STATES = Object.freeze({
   INTRO: 'INTRO',

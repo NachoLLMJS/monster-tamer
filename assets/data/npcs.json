@@ -72,7 +72,7 @@
     "idleAnimationKey": "INTRO_GIRL_IDLE_DOWN"
   },
   "2": {
-    "frame": 7,
+    "frame": 16,
     "animationKeyPrefix": "BNB_RAPPER",
     "events": [
       {
@@ -100,21 +100,22 @@
     ],
     "assetKey": "BNB_RAPPER",
     "idleFrameConfig": {
-      "DOWN": 7,
       "UP": 1,
-      "NONE": 7,
-      "LEFT": 10,
-      "RIGHT": 4
+      "RIGHT": 4,
+      "DOWN": 17,
+      "LEFT": 12,
+      "NONE": 17
     },
     "origin": {
       "x": 0,
       "y": 0.27
     },
     "useSeparateLeftAnimations": true,
-    "scale": 1
+    "scale": 1,
+    "idleAnimationKey": "BNB_RAPPER_IDLE_DOWN"
   },
   "3": {
-    "frame": 8,
+    "frame": 16,
     "animationKeyPrefix": "WATERFRONT_MAN",
     "events": [
       {
@@ -131,11 +132,11 @@
     "assetKey": "WATERFRONT_MAN",
     "idleAnimationKey": "WATERFRONT_MAN_IDLE_DOWN",
     "idleFrameConfig": {
-      "UP": 0,
+      "UP": 1,
       "RIGHT": 4,
-      "DOWN": 8,
+      "DOWN": 17,
       "LEFT": 12,
-      "NONE": 8
+      "NONE": 17
     },
     "origin": {
       "x": 0,
@@ -145,8 +146,23 @@
     "scale": 1
   },
   "4": {
-    "frame": 190,
-    "animationKeyPrefix": "NPC_20",
+    "frame": 16,
+    "animationKeyPrefix": "ROBINHOOD_JR_TRAINER",
+    "assetKey": "ROBINHOOD_JR_TRAINER",
+    "idleAnimationKey": "ROBINHOOD_JR_TRAINER_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 4,
+      "DOWN": 17,
+      "LEFT": 12,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1,
     "events": [
       {
         "requires": [
@@ -189,8 +205,23 @@
     ]
   },
   "5": {
-    "frame": 180,
-    "animationKeyPrefix": "NPC_19",
+    "frame": 16,
+    "animationKeyPrefix": "GREEN_PIRATE_JR_TRAINER",
+    "assetKey": "GREEN_PIRATE_JR_TRAINER",
+    "idleAnimationKey": "GREEN_PIRATE_JR_TRAINER_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 7,
+      "DOWN": 17,
+      "LEFT": 15,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1,
     "events": [
       {
         "requires": [
@@ -233,68 +264,272 @@
     ]
   },
   "6": {
-    "frame": 60,
-    "animationKeyPrefix": "NPC_7",
+    "frame": 16,
+    "animationKeyPrefix": "ITEM_MERCHANT_NPC",
     "events": [
       {
         "requires": [],
-        "type": "MESSAGE",
-        "data": {
-          "messages": [
-            "You should make sure to stock up on items."
-          ]
-        }
-      }
-    ]
-  },
-  "7": {
-    "frame": 150,
-    "animationKeyPrefix": "NPC_16",
-    "events": [
-      {
-        "requires": [],
-        "type": "MESSAGE",
-        "data": {
-          "messages": [
-            "I would stay out of the spooky forest."
-          ]
-        }
-      }
-    ]
-  },
-  "8": {
-    "frame": 160,
-    "animationKeyPrefix": "NPC_17",
-    "events": [
-      {
-        "requires": [],
-        "type": "MESSAGE",
-        "data": {
-          "messages": [
-            "Make sure you heal your team before you head out!"
-          ]
-        }
-      }
-    ]
-  },
-  "9": {
-    "frame": 180,
-    "animationKeyPrefix": "NPC_19",
-    "events": [
-      {
-        "requires": [
-          "TRAINER_NOT_DEFEATED"
+        "excludes": [
+          "FOUND_PROFESSOR"
         ],
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "Hey! Let's battle!"
+            "Primero habla con el Profesor CZ. Tiene una misión importante para ti."
           ]
         }
       },
       {
         "requires": [
-          "TRAINER_NOT_DEFEATED"
+          "FOUND_PROFESSOR"
+        ],
+        "excludes": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "CZ me avisó de que vendrías. Las rocas del Bosque Esmeralda bloquean la salida norte.",
+            "Toma este Romperrocas. Acércate a la barrera mirando hacia arriba y pulsa ESPACIO."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
+        "excludes": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "type": "GIVE_ITEM",
+        "data": {
+          "itemId": 3,
+          "quantity": 1
+        }
+      },
+      {
+        "requires": [
+          "FOUND_PROFESSOR"
+        ],
+        "excludes": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "type": "ADD_FLAG",
+        "data": {
+          "flag": "HAS_ROCK_BREAKER"
+        }
+      },
+      {
+        "requires": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "Ya tienes el Romperrocas. Habla con el guardabosques antes de entrar al bosque."
+          ]
+        }
+      }
+    ],
+    "assetKey": "ITEM_MERCHANT_NPC",
+    "idleAnimationKey": "ITEM_MERCHANT_NPC_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 7,
+      "DOWN": 17,
+      "LEFT": 15,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
+  },
+  "7": {
+    "frame": 16,
+    "animationKeyPrefix": "FOREST_RANGER_NPC",
+    "events": [
+      {
+        "requires": [],
+        "excludes": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "No entres todavía al bosque. Primero consigue una herramienta para apartar las rocas."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "excludes": [
+          "RANGER_BRIEFED"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "Así que llevas el Romperrocas... perfecto.",
+            "La salida norte del bosque está bloqueada por cinco rocas. Antes de ir, prepara a tu equipo con la enfermera."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "HAS_ROCK_BREAKER"
+        ],
+        "excludes": [
+          "RANGER_BRIEFED"
+        ],
+        "type": "ADD_FLAG",
+        "data": {
+          "flag": "RANGER_BRIEFED"
+        }
+      },
+      {
+        "requires": [
+          "RANGER_BRIEFED"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "La enfermera está cerca. Prepárate y derrota al rival que vigila el camino norte."
+          ]
+        }
+      }
+    ],
+    "assetKey": "FOREST_RANGER_NPC",
+    "idleAnimationKey": "FOREST_RANGER_NPC_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 7,
+      "DOWN": 17,
+      "LEFT": 15,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
+  },
+  "8": {
+    "frame": 16,
+    "animationKeyPrefix": "FIELD_NURSE_NPC",
+    "events": [
+      {
+        "requires": [],
+        "excludes": [
+          "RANGER_BRIEFED"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "Puedo curar a tu equipo, pero habla antes con el guardabosques para conocer la ruta."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "RANGER_BRIEFED"
+        ],
+        "excludes": [
+          "FOREST_SUPPLIES_READY"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "El guardabosques me contó tu misión. Voy a dejar a todo tu equipo listo para el bosque."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "RANGER_BRIEFED"
+        ],
+        "excludes": [
+          "FOREST_SUPPLIES_READY"
+        ],
+        "type": "HEAL",
+        "data": {}
+      },
+      {
+        "requires": [
+          "RANGER_BRIEFED"
+        ],
+        "excludes": [
+          "FOREST_SUPPLIES_READY"
+        ],
+        "type": "ADD_FLAG",
+        "data": {
+          "flag": "FOREST_SUPPLIES_READY"
+        }
+      },
+      {
+        "requires": [
+          "FOREST_SUPPLIES_READY"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "Tu equipo está listo. Ahora derrota al rival rubio del camino norte."
+          ]
+        }
+      }
+    ],
+    "assetKey": "FIELD_NURSE_NPC",
+    "idleAnimationKey": "FIELD_NURSE_NPC_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 4,
+      "DOWN": 17,
+      "LEFT": 12,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
+  },
+  "9": {
+    "frame": 16,
+    "animationKeyPrefix": "GREEN_RIVAL_TRAINER",
+    "events": [
+      {
+        "requires": [],
+        "excludes": [
+          "FOREST_SUPPLIES_READY"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "No pienso dejarte pasar sin preparación. Habla con el guardabosques y la enfermera."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "TRAINER_NOT_DEFEATED",
+          "FOREST_SUPPLIES_READY"
+        ],
+        "type": "MESSAGE",
+        "data": {
+          "messages": [
+            "¿Quieres llegar al Bosque Esmeralda? Primero tendrás que vencerme."
+          ]
+        }
+      },
+      {
+        "requires": [
+          "TRAINER_NOT_DEFEATED",
+          "FOREST_SUPPLIES_READY"
         ],
         "type": "BATTLE",
         "data": {
@@ -302,10 +537,10 @@
             6,
             7
           ],
-          "assetKey": "TRAINER_YOUTH_BOY",
-          "trainerName": "Jr. Trainer",
+          "assetKey": "TRAINER_YOUTH_BOY_GREEN_RIVAL",
+          "trainerName": "Rival del Norte",
           "trainerLostMessages": [
-            "I'll need to keep practicing."
+            "Has ganado. El camino al bosque es tuyo."
           ]
         }
       },
@@ -316,15 +551,30 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "I'll need to train before we battle again!"
+            "El Bosque Esmeralda está al norte. Usa el Romperrocas frente a la barrera."
           ]
         }
       }
-    ]
+    ],
+    "assetKey": "GREEN_RIVAL_TRAINER",
+    "idleAnimationKey": "GREEN_RIVAL_TRAINER_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 7,
+      "DOWN": 17,
+      "LEFT": 15,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
   },
   "10": {
-    "frame": 50,
-    "animationKeyPrefix": "NPC_6",
+    "frame": 16,
+    "animationKeyPrefix": "INN_HEALER_NPC",
     "events": [
       {
         "requires": [],
@@ -358,6 +608,21 @@
           ]
         }
       }
-    ]
+    ],
+    "assetKey": "INN_HEALER_NPC",
+    "idleAnimationKey": "INN_HEALER_NPC_IDLE_DOWN",
+    "idleFrameConfig": {
+      "UP": 1,
+      "RIGHT": 4,
+      "DOWN": 17,
+      "LEFT": 12,
+      "NONE": 17
+    },
+    "origin": {
+      "x": 0,
+      "y": 0.27
+    },
+    "useSeparateLeftAnimations": true,
+    "scale": 1
   }
 }

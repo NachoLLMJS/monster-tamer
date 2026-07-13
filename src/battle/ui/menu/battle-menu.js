@@ -699,7 +699,9 @@ export class BattleMenu {
       /** @type {import('../../../scenes/inventory-scene.js').InventorySceneData} */
       const sceneDataToPass = {
         previousSceneName: SCENE_KEYS.BATTLE_SCENE,
-        itemCategoriesThatCannotBeUsed: this.#isTrainerBattle ? [ITEM_CATEGORY.CAPTURE] : [],
+        itemCategoriesThatCannotBeUsed: this.#isTrainerBattle
+          ? [ITEM_CATEGORY.CAPTURE, ITEM_CATEGORY.KEY]
+          : [ITEM_CATEGORY.KEY],
       };
       this.#scene.scene.launch(SCENE_KEYS.INVENTORY_SCENE, sceneDataToPass);
       this.#scene.scene.pause(SCENE_KEYS.BATTLE_SCENE);

@@ -73,6 +73,7 @@ import Phaser from '../lib/phaser.js';
 export const ITEM_CATEGORY = Object.freeze({
   HEAL: 'HEAL',
   CAPTURE: 'CAPTURE',
+  KEY: 'KEY',
 });
 
 /**
@@ -133,6 +134,8 @@ export const NPC_EVENT_TYPE = Object.freeze({
   HEAL: 'HEAL',
   TRADE: 'TRADE',
   ITEM: 'ITEM',
+  GIVE_ITEM: 'GIVE_ITEM',
+  ADD_FLAG: 'ADD_FLAG',
   BATTLE: 'BATTLE',
 });
 

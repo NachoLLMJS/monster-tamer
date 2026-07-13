@@ -2,7 +2,7 @@ import { BattleMonster } from './battle-monster.js?v=bilore-battle-idle-v1';
 
 /** @type {import('../../types/typedef.js').Coordinate} */
 const ENEMY_POSITION = Object.freeze({
-  x: 816,
+  x: 848,
   y: 144,
 });
 

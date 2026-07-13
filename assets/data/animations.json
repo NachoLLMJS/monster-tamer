@@ -169,56 +169,32 @@
     "assetKey": "INTRO_GIRL"
   },
   {
-    "key": "BNB_RAPPER_UP",
+    "key": "ROBINHOOD_JR_TRAINER_IDLE_DOWN",
     "frames": [
-      0,
-      1,
-      2
+      16,
+      17,
+      18,
+      19
     ],
-    "frameRate": 6,
+    "frameRate": 2,
     "repeat": -1,
     "delay": 0,
     "yoyo": true,
-    "assetKey": "BNB_RAPPER"
+    "assetKey": "ROBINHOOD_JR_TRAINER"
   },
   {
-    "key": "BNB_RAPPER_RIGHT",
+    "key": "GREEN_PIRATE_JR_TRAINER_IDLE_DOWN",
     "frames": [
-      3,
-      4,
-      5
+      16,
+      17,
+      18,
+      19
     ],
-    "frameRate": 6,
+    "frameRate": 2,
     "repeat": -1,
     "delay": 0,
     "yoyo": true,
-    "assetKey": "BNB_RAPPER"
-  },
-  {
-    "key": "BNB_RAPPER_DOWN",
-    "frames": [
-      6,
-      7,
-      8
-    ],
-    "frameRate": 6,
-    "repeat": -1,
-    "delay": 0,
-    "yoyo": true,
-    "assetKey": "BNB_RAPPER"
-  },
-  {
-    "key": "BNB_RAPPER_LEFT",
-    "frames": [
-      9,
-      10,
-      11
-    ],
-    "frameRate": 6,
-    "repeat": -1,
-    "delay": 0,
-    "yoyo": true,
-    "assetKey": "BNB_RAPPER"
+    "assetKey": "GREEN_PIRATE_JR_TRAINER"
   },
   {
     "key": "ICE_SHARD_START",
@@ -730,6 +706,76 @@
     "assetKey": "BINANCE_PROFESSOR"
   },
   {
+    "key": "BNB_RAPPER_UP",
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
+    "key": "BNB_RAPPER_RIGHT",
+    "frames": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
+    "key": "BNB_RAPPER_DOWN",
+    "frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
+    "key": "BNB_RAPPER_LEFT",
+    "frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
+    "key": "BNB_RAPPER_IDLE_DOWN",
+    "frames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "frameRate": 2,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
     "key": "WATERFRONT_MAN_UP",
     "frames": [
       0,
@@ -788,13 +834,563 @@
   {
     "key": "WATERFRONT_MAN_IDLE_DOWN",
     "frames": [
-      8,
-      10
+      16,
+      17,
+      18,
+      19
     ],
-    "frameRate": 1,
+    "frameRate": 2,
     "repeat": -1,
     "delay": 0,
     "yoyo": true,
     "assetKey": "WATERFRONT_MAN"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_UP",
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_RIGHT",
+    "frames": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_DOWN",
+    "frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_LEFT",
+    "frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_IDLE_DOWN",
+    "frames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "frameRate": 2,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_UP",
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_RIGHT",
+    "frames": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_DOWN",
+    "frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_LEFT",
+    "frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_IDLE_DOWN",
+    "frames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "frameRate": 2,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_UP",
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_RIGHT",
+    "frames": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_DOWN",
+    "frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_LEFT",
+    "frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_IDLE_DOWN",
+    "frames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "frameRate": 2,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_UP",
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_RIGHT",
+    "frames": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_DOWN",
+    "frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_LEFT",
+    "frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_IDLE_DOWN",
+    "frames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "frameRate": 2,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "INN_HEALER_NPC_UP",
+    "frames": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "INN_HEALER_NPC"
+  },
+  {
+    "key": "INN_HEALER_NPC_RIGHT",
+    "frames": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "INN_HEALER_NPC"
+  },
+  {
+    "key": "INN_HEALER_NPC_DOWN",
+    "frames": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "INN_HEALER_NPC"
+  },
+  {
+    "key": "INN_HEALER_NPC_LEFT",
+    "frames": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "frameRate": 6,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "INN_HEALER_NPC"
+  },
+  {
+    "key": "INN_HEALER_NPC_IDLE_DOWN",
+    "frames": [
+      16,
+      17,
+      18,
+      19
+    ],
+    "frameRate": 2,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": true,
+    "assetKey": "INN_HEALER_NPC"
+  },
+  {
+    "key": "ROBINHOOD_JR_TRAINER_IDLE_RIGHT",
+    "frames": [
+      4
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "ROBINHOOD_JR_TRAINER"
+  },
+  {
+    "key": "ROBINHOOD_JR_TRAINER_IDLE_LEFT",
+    "frames": [
+      12
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "ROBINHOOD_JR_TRAINER"
+  },
+  {
+    "key": "GREEN_PIRATE_JR_TRAINER_IDLE_RIGHT",
+    "frames": [
+      7
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "GREEN_PIRATE_JR_TRAINER"
+  },
+  {
+    "key": "GREEN_PIRATE_JR_TRAINER_IDLE_LEFT",
+    "frames": [
+      15
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "GREEN_PIRATE_JR_TRAINER"
+  },
+  {
+    "key": "BNB_RAPPER_IDLE_RIGHT",
+    "frames": [
+      4
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
+    "key": "BNB_RAPPER_IDLE_LEFT",
+    "frames": [
+      12
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "BNB_RAPPER"
+  },
+  {
+    "key": "WATERFRONT_MAN_IDLE_RIGHT",
+    "frames": [
+      4
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "WATERFRONT_MAN"
+  },
+  {
+    "key": "WATERFRONT_MAN_IDLE_LEFT",
+    "frames": [
+      12
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "WATERFRONT_MAN"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_IDLE_RIGHT",
+    "frames": [
+      7
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "ITEM_MERCHANT_NPC_IDLE_LEFT",
+    "frames": [
+      15
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "ITEM_MERCHANT_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_IDLE_RIGHT",
+    "frames": [
+      7
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FOREST_RANGER_NPC_IDLE_LEFT",
+    "frames": [
+      15
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "FOREST_RANGER_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_IDLE_RIGHT",
+    "frames": [
+      4
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "FIELD_NURSE_NPC_IDLE_LEFT",
+    "frames": [
+      12
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "FIELD_NURSE_NPC"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_IDLE_RIGHT",
+    "frames": [
+      7
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "GREEN_RIVAL_TRAINER_IDLE_LEFT",
+    "frames": [
+      15
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "GREEN_RIVAL_TRAINER"
+  },
+  {
+    "key": "INN_HEALER_NPC_IDLE_RIGHT",
+    "frames": [
+      4
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "INN_HEALER_NPC"
+  },
+  {
+    "key": "INN_HEALER_NPC_IDLE_LEFT",
+    "frames": [
+      12
+    ],
+    "frameRate": 1,
+    "repeat": -1,
+    "delay": 0,
+    "yoyo": false,
+    "assetKey": "INN_HEALER_NPC"
   }
 ]

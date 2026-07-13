@@ -1,0 +1,7 @@
+.git
+.vercel
+node_modules
+tools
+tmp_*.png
+assets/data/*.bak-*
+*.log

@@ -15,6 +15,9 @@ export const NPC_MOVEMENT_PATTERN = Object.freeze({
   SET_PATH: 'SET_PATH',
 });
 
+// NPC grid coordinates stay unchanged; this only aligns their visible feet with the player sprite.
+const NPC_VISUAL_Y_OFFSET = 6;
+
 /**
  * @typedef NPCPath
  * @type {Object.<number, import('../../types/typedef.js').Coordinate>}
@@ -86,6 +89,10 @@ export class NPC extends Character {
     this.#movementPattern = config.movementPattern;
     this.#lastMovementTime = Phaser.Math.Between(3500, 5000);
     this._phaserGameObject.setScale(config.scale ?? 4);
+    this._phaserGameObject.setOrigin(
+      this._origin.x,
+      this._origin.y - NPC_VISUAL_Y_OFFSET / this._phaserGameObject.displayHeight
+    );
     this.#events = config.events;
     this.#animationKeyPrefix = config.animationKeyPrefix;
     this.#id = config.id;
@@ -203,6 +210,32 @@ export class NPC extends Character {
       default:
         exhaustiveGuard(direction);
     }
+    this.#playIdleAnimationForCurrentDirection();
+  }
+
+  /**
+   * Plays a directional idle when one exists and falls back to the legacy idle animation.
+   * @returns {boolean} true when an idle animation was started or is already playing
+   */
+  #playIdleAnimationForCurrentDirection() {
+    const directionalIdleKey = `${this.#animationKeyPrefix}_IDLE_${this._direction}`;
+    let idleAnimationKey;
+    if (this._scene.anims.exists(directionalIdleKey)) {
+      idleAnimationKey = directionalIdleKey;
+    } else if (this._direction === DIRECTION.DOWN || this._direction === DIRECTION.NONE) {
+      idleAnimationKey = this.#idleAnimationKey;
+    }
+    if (idleAnimationKey === undefined) {
+      return false;
+    }
+    if (
+      !this._phaserGameObject.anims.isPlaying ||
+      this._phaserGameObject.anims.currentAnim?.key !== idleAnimationKey
+    ) {
+      this._phaserGameObject.setFlipX(false);
+      this._phaserGameObject.play(idleAnimationKey);
+    }
+    return true;
   }
 
   /**
@@ -217,21 +250,15 @@ export class NPC extends Character {
       return;
     }
     if (this.#movementPattern === NPC_MOVEMENT_PATTERN.IDLE) {
-      if (this.#idleAnimationKey !== undefined) {
-        if (
-          !this._phaserGameObject.anims.isPlaying ||
-          this._phaserGameObject.anims.currentAnim?.key !== this.#idleAnimationKey
-        ) {
-          this._phaserGameObject.setFlipX(false);
-          this._phaserGameObject.play(this.#idleAnimationKey);
-        }
-        return;
+      if (!this.#playIdleAnimationForCurrentDirection()) {
+        super.update(time);
       }
-      super.update(time);
       return;
     }
 
-    super.update(time);
+    if (!this.#playIdleAnimationForCurrentDirection()) {
+      super.update(time);
+    }
 
     if (this.#lastMovementTime < time) {
       /** @type {import('../../common/direction.js').Direction} */
