@@ -11,5 +11,3 @@ node_modules
 all-game-assets.zip
 /dist
 .vercel
-
-.vercel
