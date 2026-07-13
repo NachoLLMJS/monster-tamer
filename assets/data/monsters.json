@@ -40,9 +40,9 @@
   {
     "id": "3",
     "monsterId": 3,
-    "name": "ignivolt",
-    "chainType": "LEGACY",
-    "assetKey": "IGNIVOLT",
+    "name": "Triluma",
+    "chainType": "SOLANA",
+    "assetKey": "TRILUMA",
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
@@ -53,14 +53,15 @@
     "currentAttack": 5,
     "currentLevel": 5,
     "baseExp": 51,
-    "currentExp": 125
+    "currentExp": 125,
+    "idleAnimationKey": "TRILUMA_BATTLE_IDLE"
   },
   {
     "id": "4",
     "monsterId": 4,
-    "name": "aquavalor",
-    "chainType": "LEGACY",
-    "assetKey": "AQUAVALOR",
+    "name": "Torushell",
+    "chainType": "BASE",
+    "assetKey": "TORUSHELL",
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
@@ -71,32 +72,34 @@
     "currentAttack": 5,
     "currentLevel": 5,
     "baseExp": 50,
-    "currentExp": 125
+    "currentExp": 125,
+    "idleAnimationKey": "TORUSHELL_BATTLE_IDLE"
   },
   {
     "id": "5",
     "monsterId": 5,
-    "name": "frostsaber",
-    "chainType": "LEGACY",
-    "assetKey": "FROSTSABER",
+    "name": "Trivurn",
+    "chainType": "TRON",
+    "assetKey": "TRIVURN",
     "assetFrame": 0,
     "currentHp": 25,
     "maxHp": 25,
     "attackIds": [
-      1
+      3
     ],
     "baseAttack": 5,
     "currentAttack": 5,
     "currentLevel": 5,
     "baseExp": 53,
-    "currentExp": 125
+    "currentExp": 125,
+    "idleAnimationKey": "TRIVURN_BATTLE_IDLE"
   },
   {
     "id": "6",
     "monsterId": 3,
-    "name": "ignivolt",
-    "chainType": "LEGACY",
-    "assetKey": "IGNIVOLT",
+    "name": "Triluma",
+    "chainType": "SOLANA",
+    "assetKey": "TRILUMA",
     "assetFrame": 0,
     "currentHp": 15,
     "maxHp": 15,
@@ -107,7 +110,8 @@
     "currentAttack": 3,
     "currentLevel": 3,
     "baseExp": 40,
-    "currentExp": 27
+    "currentExp": 27,
+    "idleAnimationKey": "TRILUMA_BATTLE_IDLE"
   },
   {
     "id": "7",

@@ -5,5 +5,5 @@ export const MONSTER_CHAIN_TYPE = Object.freeze({
   ROBINHOOD: 'ROBINHOOD',
   SOLANA: 'SOLANA',
   TRON: 'TRON',
-  BASECHAIN: 'BASECHAIN',
+  BASE: 'BASE',
 });

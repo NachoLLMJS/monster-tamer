@@ -10,5 +10,11 @@
     "name": "slash",
     "animationName": "SLASH",
     "audioKey": "CLAW"
+  },
+  {
+    "id": 3,
+    "name": "magma claw",
+    "animationName": "SLASH",
+    "audioKey": "CLAW"
   }
 ]

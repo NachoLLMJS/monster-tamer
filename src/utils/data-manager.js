@@ -158,6 +158,34 @@ class DataManager extends Phaser.Events.EventEmitter {
             idleAnimationKey: 'RHOVYN_BATTLE_IDLE',
           };
         }
+        if (monster.monsterId === 3) {
+          return {
+            ...monster,
+            name: 'Triluma',
+            chainType: MONSTER_CHAIN_TYPE.SOLANA,
+            assetKey: 'TRILUMA',
+            idleAnimationKey: 'TRILUMA_BATTLE_IDLE',
+          };
+        }
+        if (monster.monsterId === 4) {
+          return {
+            ...monster,
+            name: 'Torushell',
+            chainType: MONSTER_CHAIN_TYPE.BASE,
+            assetKey: 'TORUSHELL',
+            idleAnimationKey: 'TORUSHELL_BATTLE_IDLE',
+          };
+        }
+        if (monster.monsterId === 5) {
+          return {
+            ...monster,
+            name: 'Trivurn',
+            chainType: MONSTER_CHAIN_TYPE.TRON,
+            assetKey: 'TRIVURN',
+            attackIds: [3],
+            idleAnimationKey: 'TRIVURN_BATTLE_IDLE',
+          };
+        }
         return {
           ...monster,
           chainType: monster.monsterId === 2 ? MONSTER_CHAIN_TYPE.BNB : MONSTER_CHAIN_TYPE.LEGACY,
