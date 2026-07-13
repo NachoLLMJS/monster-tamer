@@ -1,8 +1,8 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js?v=bilore-battle-idle-v1';
+import { PreloadScene } from './scenes/preload-scene.js?v=normal-map-only-v39';
 import { BattleScene } from './scenes/battle-scene.js?v=bilore-battle-idle-v1';
-import { WorldScene } from './scenes/world-scene.js?v=right-house-dev-collision-v37-one-tile';
+import { WorldScene } from './scenes/world-scene.js?v=normal-map-only-v39';
 import { TitleScene } from './scenes/title-scene.js';
 import { OptionsScene } from './scenes/options-scene.js';
 import { TestScene } from './scenes/test-scene.js';

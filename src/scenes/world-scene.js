@@ -52,6 +52,7 @@ const RIGHT_HOUSE_AC_FAN_POSITIONS = Object.freeze([
   { x: 1451, y: 4429 },
 ]);
 const DEV_COLLISION_GID = 189;
+const DEV_NO_POKEMONS_STORAGE_KEY = 'tameriaDevNoPokemons';
 
 export class WorldScene extends BaseScene {
   /** @type {Player} */
@@ -60,6 +61,8 @@ export class WorldScene extends BaseScene {
   #encounterLayers;
   /** @type {boolean} */
   #wildMonsterEncountered;
+  /** @type {boolean} */
+  #wildEncountersDisabled;
   /** @type {Phaser.Tilemaps.ObjectLayer | undefined} */
   #signLayer;
   /** @type {DialogScene} */
@@ -184,6 +187,7 @@ export class WorldScene extends BaseScene {
     );
 
     this.#wildMonsterEncountered = false;
+    this.#wildEncountersDisabled = window.localStorage.getItem(DEV_NO_POKEMONS_STORAGE_KEY) === 'true';
     this.#npcPlayerIsInteractingWith = undefined;
     this.#items = [];
     this.#lastNpcEventHandledIndex = -1;
@@ -294,8 +298,7 @@ export class WorldScene extends BaseScene {
       npc.addCharacterToCheckForCollisionsWith(this.#player);
     });
 
-    // create foreground for depth
-    this.add.image(0, 0, `${this.#sceneData.area.toUpperCase()}_FOREGROUND`, 0).setOrigin(0);
+    // Foreground overlay intentionally disabled: the game uses only the normal map image.
 
     // create menu
     this.#menu = new WorldMenu(this);
@@ -605,6 +608,10 @@ export class WorldScene extends BaseScene {
         child.visible = false;
       });
     if (this.#encounterZonePlayerIsEntering === undefined) {
+      return;
+    }
+    if (this.#wildEncountersDisabled) {
+      this.#wildMonsterEncountered = false;
       return;
     }
     console.log(`[${WorldScene.name}:handlePlayerMovementInEncounterZone] player is in an encounter zone`);
@@ -1682,8 +1689,34 @@ export class WorldScene extends BaseScene {
       this.game.canvas.focus();
       toggleEditor();
     });
+
+    const noPokemonsButton = document.createElement('button');
+    noPokemonsButton.style.position = 'fixed';
+    noPokemonsButton.style.right = '12px';
+    noPokemonsButton.style.top = '54px';
+    noPokemonsButton.style.zIndex = '999999';
+    noPokemonsButton.style.padding = '8px 10px';
+    noPokemonsButton.style.font = '700 12px monospace';
+    noPokemonsButton.style.color = '#ffffff';
+    noPokemonsButton.style.border = '2px solid #f59e0b';
+    noPokemonsButton.style.borderRadius = '6px';
+    noPokemonsButton.style.cursor = 'pointer';
+    noPokemonsButton.title = 'Activar/desactivar encuentros de Pokémon salvajes';
+    const updateNoPokemonsButton = () => {
+      noPokemonsButton.textContent = `NO POKEMONS: ${this.#wildEncountersDisabled ? 'ON' : 'OFF'}`;
+      noPokemonsButton.style.background = this.#wildEncountersDisabled ? '#7f1d1d' : '#111827';
+    };
+    updateNoPokemonsButton();
+    document.body.appendChild(noPokemonsButton);
+    noPokemonsButton.addEventListener('click', () => {
+      this.#wildEncountersDisabled = !this.#wildEncountersDisabled;
+      window.localStorage.setItem(DEV_NO_POKEMONS_STORAGE_KEY, String(this.#wildEncountersDisabled));
+      updateNoPokemonsButton();
+      this.game.canvas.focus();
+    });
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       devButton.remove();
+      noPokemonsButton.remove();
     });
 
     const handleDevKey = (event) => {
