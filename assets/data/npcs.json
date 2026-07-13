@@ -101,9 +101,9 @@
     "assetKey": "BNB_RAPPER",
     "idleFrameConfig": {
       "UP": 1,
-      "RIGHT": 4,
+      "RIGHT": 20,
       "DOWN": 17,
-      "LEFT": 12,
+      "LEFT": 22,
       "NONE": 17
     },
     "origin": {

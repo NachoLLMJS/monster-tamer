@@ -1242,23 +1242,25 @@
   {
     "key": "BNB_RAPPER_IDLE_RIGHT",
     "frames": [
-      4
+      20,
+      21
     ],
-    "frameRate": 1,
+    "frameRate": 2,
     "repeat": -1,
     "delay": 0,
-    "yoyo": false,
+    "yoyo": true,
     "assetKey": "BNB_RAPPER"
   },
   {
     "key": "BNB_RAPPER_IDLE_LEFT",
     "frames": [
-      12
+      22,
+      23
     ],
-    "frameRate": 1,
+    "frameRate": 2,
     "repeat": -1,
     "delay": 0,
-    "yoyo": false,
+    "yoyo": true,
     "assetKey": "BNB_RAPPER"
   },
   {

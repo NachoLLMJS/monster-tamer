@@ -78,7 +78,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.image(
       BATTLE_ASSET_KEYS.TRAINER_YOUTH_GIRL,
-      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=story-idle-rockbreaker-v3`
+      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=story-idle-rockbreaker-v4`
     );
 
     // health bar assets
@@ -145,7 +145,7 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
-    const dataVersion = 'story-idle-rockbreaker-v3';
+    const dataVersion = 'story-idle-rockbreaker-v4';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, 'assets/data/attacks.json');
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ITEMS, `assets/data/items.json?v=${dataVersion}`);
@@ -173,7 +173,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'story-idle-rockbreaker-v3';
+    const mainMapVersion = 'story-idle-rockbreaker-v4';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
