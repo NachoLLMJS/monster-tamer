@@ -91,7 +91,24 @@ export class MonsterDetailsScene extends BaseScene {
       ...UI_TEXT_STYLE,
       fontSize: '40px',
     });
-    this.add.image(160, 310, this.#monsterDetails.assetKey).setOrigin(0, 1).setScale(0.7);
+    this.add.text(200, 105, `CHAIN: ${this.#monsterDetails.chainType}`, {
+      ...UI_TEXT_STYLE,
+      color: '#C6FF00',
+      fontSize: '22px',
+    });
+    const monsterSprite = this.add.sprite(160, 310, this.#monsterDetails.assetKey).setOrigin(0, 1).setScale(0.7);
+    if (this.#monsterDetails.idleAnimationKey) {
+      if (!this.anims.exists(this.#monsterDetails.idleAnimationKey)) {
+        this.anims.create({
+          key: this.#monsterDetails.idleAnimationKey,
+          frames: this.anims.generateFrameNumbers(this.#monsterDetails.assetKey, { start: 0, end: 3 }),
+          frameRate: 4,
+          repeat: -1,
+          yoyo: true,
+        });
+      }
+      monsterSprite.play(this.#monsterDetails.idleAnimationKey);
+    }
 
     if (this.#monsterAttacks[0] !== undefined) {
       this.add.text(560, 82, this.#monsterAttacks[0].name, MONSTER_MOVE_TEXT_STYLE);

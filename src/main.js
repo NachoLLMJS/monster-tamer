@@ -1,13 +1,13 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js?v=story-idle-rockbreaker-v4';
-import { BattleScene } from './scenes/battle-scene.js?v=enemy-right-v2';
-import { WorldScene } from './scenes/world-scene.js?v=story-idle-rockbreaker-v4';
+import { PreloadScene } from './scenes/preload-scene.js?v=chain-monsters-v1';
+import { BattleScene } from './scenes/battle-scene.js?v=chain-monsters-v1';
+import { WorldScene } from './scenes/world-scene.js?v=chain-monsters-v1';
 import { TitleScene } from './scenes/title-scene.js';
 import { OptionsScene } from './scenes/options-scene.js';
-import { TestScene } from './scenes/test-scene.js';
+import { TestScene } from './scenes/test-scene.js?v=chain-monsters-v1';
 import { MonsterPartyScene } from './scenes/monster-party-scene.js';
-import { MonsterDetailsScene } from './scenes/monster-details-scene.js';
+import { MonsterDetailsScene } from './scenes/monster-details-scene.js?v=chain-monsters-v1';
 import { InventoryScene } from './scenes/inventory-scene.js';
 import { CutsceneScene } from './scenes/cutscene-scene.js';
 import { DialogScene } from './scenes/dialog-scene.js';

@@ -42,7 +42,7 @@ export class TestScene extends Phaser.Scene {
     const background = new Background(this);
     background.showForest();
 
-    this.#playerMonster = this.add.image(256, 316, MONSTER_ASSET_KEYS.IGUANIGNITE, 0).setFlipX(true);
+    this.#playerMonster = this.add.image(256, 316, MONSTER_ASSET_KEYS.RHOVYN, 0).setFlipX(true);
     this.#enemyMonster = this.add.image(768, 144, MONSTER_ASSET_KEYS.CARNODUSK, 0).setFlipX(false);
     makeDraggable(this.#enemyMonster);
 

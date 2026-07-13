@@ -5,6 +5,7 @@ import { TEXT_SPEED_OPTIONS, BATTLE_SCENE_OPTIONS, BATTLE_STYLE_OPTIONS, SOUND_O
 import { exhaustiveGuard } from './guard.js';
 import { DataUtils } from './data-utils.js';
 import { GAME_FLAG } from '../types/typedef.js';
+import { MONSTER_CHAIN_TYPE } from '../monsters/chain-types.js';
 
 const LOCAL_STORAGE_KEY = 'MONSTER_TAMER_DATA';
 
@@ -147,6 +148,21 @@ class DataManager extends Phaser.Events.EventEmitter {
       // TODO: we should add error handling and data validation at this step to make sure we get the data we expect.
       /** @type {GlobalState} */
       const parsedData = JSON.parse(savedData);
+      parsedData.monsters.inParty = parsedData.monsters.inParty.map((monster) => {
+        if (monster.monsterId === 1) {
+          return {
+            ...monster,
+            name: 'Rhovyn',
+            chainType: MONSTER_CHAIN_TYPE.ROBINHOOD,
+            assetKey: 'RHOVYN',
+            idleAnimationKey: 'RHOVYN_BATTLE_IDLE',
+          };
+        }
+        return {
+          ...monster,
+          chainType: monster.monsterId === 2 ? MONSTER_CHAIN_TYPE.BNB : MONSTER_CHAIN_TYPE.LEGACY,
+        };
+      });
       // update the state with the saved data
       this.#updateDataManger(parsedData);
     } catch (error) {

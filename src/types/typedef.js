@@ -24,6 +24,7 @@ import Phaser from '../lib/phaser.js';
  * @property {string} id the unique identifier for this monster
  * @property {number} monsterId the unique identifier for this monster type
  * @property {string} name the name of the monster
+ * @property {import('../monsters/chain-types.js').MONSTER_CHAIN_TYPE} chainType blockchain family represented by this monster
  * @property {string} assetKey the name of the asset key that should be used for this monster
  * @property {number} [assetFrame=0] if the asset key is tied to a spritesheet, this frame will be used, defaults to 0
  * @property {string} [idleAnimationKey] optional idle animation key to play in battle if this monster is a spritesheet

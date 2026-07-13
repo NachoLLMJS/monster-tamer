@@ -78,7 +78,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.image(
       BATTLE_ASSET_KEYS.TRAINER_YOUTH_GIRL,
-      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=story-idle-rockbreaker-v4`
+      `${monsterTamerAssetPath}/battle/trainer_youth_girl_lime_techwear.png?v=chain-monsters-v1`
     );
 
     // health bar assets
@@ -118,6 +118,7 @@ export class PreloadScene extends BaseScene {
 
     // monster assets
     const biloreAssetVersion = 'bilore-battle-idle-v1';
+    const rhovynAssetVersion = 'chain-monsters-v1';
     this.load.image(MONSTER_ASSET_KEYS.CARNODUSK, `${monsterTamerAssetPath}/monsters/carnodusk.png`);
     this.load.spritesheet(
       MONSTER_ASSET_KEYS.BILORE,
@@ -127,7 +128,14 @@ export class PreloadScene extends BaseScene {
         frameHeight: 256,
       }
     );
-    this.load.image(MONSTER_ASSET_KEYS.IGUANIGNITE, `${monsterTamerAssetPath}/monsters/iguanignite.png`);
+    this.load.spritesheet(
+      MONSTER_ASSET_KEYS.RHOVYN,
+      `${monsterTamerAssetPath}/monsters/rhovyn-battle-idle.png?v=${rhovynAssetVersion}`,
+      {
+        frameWidth: 256,
+        frameHeight: 256,
+      }
+    );
     this.load.image(MONSTER_ASSET_KEYS.AQUAVALOR, `${monsterTamerAssetPath}/monsters/aquavalor.png`);
     this.load.image(MONSTER_ASSET_KEYS.FROSTSABER, `${monsterTamerAssetPath}/monsters/frostsaber.png`);
     this.load.image(MONSTER_ASSET_KEYS.IGNIVOLT, `${monsterTamerAssetPath}/monsters/ignivolt.png`);
@@ -145,7 +153,7 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
-    const dataVersion = 'story-idle-rockbreaker-v4';
+    const dataVersion = 'chain-monsters-v1';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, 'assets/data/attacks.json');
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ITEMS, `assets/data/items.json?v=${dataVersion}`);
@@ -173,7 +181,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'story-idle-rockbreaker-v4';
+    const mainMapVersion = 'chain-monsters-v1';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
