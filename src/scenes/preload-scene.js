@@ -25,6 +25,7 @@ import { SHOW_SOCIAL_LINKS } from '../config.js';
 import { BaseScene } from './base-scene.js';
 import { setGlobalSoundSettings } from '../utils/audio-utils.js';
 
+
 export class PreloadScene extends BaseScene {
   constructor() {
     super({
@@ -209,7 +210,7 @@ export class PreloadScene extends BaseScene {
     });
 
     // load world assets
-    const mainMapVersion = 'chain-monsters-v5';
+    const mainMapVersion = 'plaza-v13';
     this.load.spritesheet(WORLD_ASSET_KEYS.GRASS, `${monsterTamerAssetPath}/map/bushes.png`, {
       frameWidth: 64,
       frameHeight: 64,
@@ -217,6 +218,10 @@ export class PreloadScene extends BaseScene {
     this.load.image(
       WORLD_ASSET_KEYS.MAIN_1_BACKGROUND,
       `${monsterTamerAssetPath}/map/main_1_level_background.png?v=${mainMapVersion}`
+    );
+    this.load.image(
+      WORLD_ASSET_KEYS.MAIN_1_BACKGROUND_CLEARED,
+      `${monsterTamerAssetPath}/map/main_1_level_background_cleared.png?v=${mainMapVersion}`
     );
     this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.MAIN_1_LEVEL, `assets/data/main_1.json?v=${mainMapVersion}`);
     this.load.image(WORLD_ASSET_KEYS.WORLD_COLLISION, `${monsterTamerAssetPath}/map/collision.png`);
@@ -271,6 +276,15 @@ export class PreloadScene extends BaseScene {
     );
     this.load.image(WORLD_ASSET_KEYS.FOREST_1_FOREGROUND, `${monsterTamerAssetPath}/map/forest_1_level_foreground.png`);
     this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.FOREST_1_LEVEL, `assets/data/forest_1.json`);
+
+    const plazaAssetPath = 'assets/images/tameria/plaza';
+    this.load.image(WORLD_ASSET_KEYS.PLAZA_1_BACKGROUND, `${plazaAssetPath}/plaza_1_background.png?v=plaza-modular-v1`);
+    this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.PLAZA_1_LEVEL, 'assets/data/plaza_1.json?v=plaza-collision-v3');
+    this.load.image(WORLD_ASSET_KEYS.PLAZA_GUILD_HALL, `${plazaAssetPath}/guild_hall.png?v=plaza-v1`);
+    this.load.image(WORLD_ASSET_KEYS.PLAZA_INN, `${plazaAssetPath}/inn.png?v=plaza-v1`);
+    this.load.image(WORLD_ASSET_KEYS.PLAZA_MAGIC_SHOP, `${plazaAssetPath}/magic_shop.png?v=plaza-v1`);
+    this.load.image(WORLD_ASSET_KEYS.PLAZA_WORKSHOP, `${plazaAssetPath}/workshop.png?v=plaza-v1`);
+    this.load.image(WORLD_ASSET_KEYS.PLAZA_FOUNTAIN, `${plazaAssetPath}/fountain.png?v=plaza-v1`);
 
     // load character images
     this.load.spritesheet(CHARACTER_ASSET_KEYS.PLAYER, 'assets/images/tameria/flap-hoodie-player.png', {
@@ -365,11 +379,7 @@ export class PreloadScene extends BaseScene {
     );
     this.load.image(INVENTORY_ASSET_KEYS.INVENTORY_BAG, `${monsterTamerAssetPath}/ui/inventory/bag.png`);
 
-    // load audio
-    this.load.setPath('assets/audio/xDeviruchi');
-    this.load.audio(AUDIO_ASSET_KEYS.MAIN, 'And-the-Journey-Begins.wav');
-    this.load.audio(AUDIO_ASSET_KEYS.BATTLE, 'Decisive-Battle.wav');
-    this.load.audio(AUDIO_ASSET_KEYS.TITLE, 'Title-Theme.wav');
+    // Sound effects only; background music is intentionally disabled.
     this.load.setPath('assets/audio/leohpaz');
     this.load.audio(AUDIO_ASSET_KEYS.CLAW, '03_Claw_03.wav');
     this.load.audio(AUDIO_ASSET_KEYS.GRASS, '03_Step_grass_03.wav');

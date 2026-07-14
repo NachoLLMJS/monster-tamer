@@ -17,7 +17,7 @@ import { QuestTracker } from '../world/quest-tracker.js';
 import { STORY_FLAGS } from '../world/story-flags.js';
 import { BaseScene } from './base-scene.js';
 import { DataUtils } from '../utils/data-utils.js';
-import { playBackgroundMusic, playSoundFx } from '../utils/audio-utils.js';
+import { playSoundFx } from '../utils/audio-utils.js';
 import { weightedRandom } from '../utils/random.js';
 import { Item } from '../world/item.js';
 import { BATTLE_FLAG, ENCOUNTER_TILE_TYPE, GAME_EVENT_TYPE, ITEM_CATEGORY, NPC_EVENT_TYPE } from '../types/typedef.js';
@@ -27,6 +27,7 @@ import { CutsceneScene } from './cutscene-scene.js';
 import { DialogScene } from './dialog-scene.js';
 import * as TiledUtils from '../utils/tiled-utils.js';
 import * as CameraUtils from '../utils/camera-utils.js';
+
 import {
   CUSTOM_TILED_TYPES,
   OBJECT_LAYER_NAMES,
@@ -58,6 +59,7 @@ const DEV_NO_POKEMONS_STORAGE_KEY = 'tameriaDevNoPokemons';
 const DEV_MAP_OPTIONS = Object.freeze([
   { area: 'main_1', label: 'Tameria', isInterior: false, position: { x: 896, y: 4736 } },
   { area: 'forest_1', label: 'Bosque / Rocas', isInterior: false, position: { x: 576, y: 640 } },
+  { area: 'plaza_1', label: 'Plaza Spellborne', isInterior: false, position: { x: 768, y: 896 } },
   { area: 'building_1', label: 'Centro de curación', isInterior: true, position: { x: 320, y: 448 } },
   { area: 'building_2', label: 'Casa vecina', isInterior: true, position: { x: 320, y: 448 } },
   { area: 'building_3', label: 'Tienda', isInterior: true, position: { x: 320, y: 448 } },
@@ -280,17 +282,27 @@ export class WorldScene extends BaseScene {
     } else {
       this.cameras.main.setZoom(0.8);
     }
+    const rocksCleared = dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED);
+    const mainRocksCleared = this.#sceneData.area === 'main_1' && rocksCleared;
     const forestRocksCleared =
-      this.#sceneData.area === 'forest_1' && dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED);
-    const backgroundKey = forestRocksCleared
-      ? WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED
-      : `${this.#sceneData.area.toUpperCase()}_BACKGROUND`;
+      this.#sceneData.area === 'forest_1' && rocksCleared;
+    let backgroundKey = `${this.#sceneData.area.toUpperCase()}_BACKGROUND`;
+    if (mainRocksCleared) {
+      backgroundKey = WORLD_ASSET_KEYS.MAIN_1_BACKGROUND_CLEARED;
+    } else if (forestRocksCleared) {
+      backgroundKey = WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED;
+    }
     this.#backgroundImage = this.add
       .image(0, 0, backgroundKey, 0)
       .setOrigin(0)
       .setDisplaySize(map.widthInPixels, map.heightInPixels);
     if (forestRocksCleared) {
       for (let x = 7; x <= 11; x += 1) {
+        this.#collisionLayer.removeTileAt(x, 0);
+      }
+    }
+    if (mainRocksCleared) {
+      for (let x = 16; x <= 22; x += 1) {
         this.#collisionLayer.removeTileAt(x, 0);
       }
     }
@@ -369,8 +381,6 @@ export class WorldScene extends BaseScene {
     });
     dataManager.store.set(DATA_MANAGER_STORE_KEYS.GAME_STARTED, true);
 
-    // add audio
-    playBackgroundMusic(this, AUDIO_ASSET_KEYS.MAIN);
     // add UI scene for cutscene and dialog
     this.scene.launch(SCENE_KEYS.CUTSCENE_SCENE);
     this.scene.launch(SCENE_KEYS.DIALOG_SCENE);
@@ -515,12 +525,12 @@ export class WorldScene extends BaseScene {
     const { x, y } = this.#player.sprite;
     const targetPosition = getTargetPositionFromGameObjectPositionAndDirection({ x, y }, this.#player.direction);
 
-    const isForestRockGate =
-      this.#sceneData.area === 'forest_1' &&
+    const isMainRockGate =
+      this.#sceneData.area === 'main_1' &&
       targetPosition.y === 0 &&
-      targetPosition.x >= 7 * TILE_SIZE &&
-      targetPosition.x <= 11 * TILE_SIZE;
-    if (isForestRockGate && !dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED)) {
+      targetPosition.x >= 16 * TILE_SIZE &&
+      targetPosition.x <= 22 * TILE_SIZE;
+    if (isMainRockGate && !dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED)) {
       if (!dataManager.getFlags().has(STORY_FLAGS.HAS_ROCK_BREAKER)) {
         this.#dialogUi.showDialogModal([
           'Estas rocas bloquean la salida norte.',
@@ -529,16 +539,24 @@ export class WorldScene extends BaseScene {
         return;
       }
 
-      dataManager.addFlag(STORY_FLAGS.ROCKS_CLEARED);
-      for (let rockX = 7; rockX <= 11; rockX += 1) {
-        this.#collisionLayer?.removeTileAt(rockX, 0);
-      }
-      this.#backgroundImage?.setTexture(WORLD_ASSET_KEYS.FOREST_1_BACKGROUND_CLEARED);
-      this.#questTracker?.sync({ animateCompletion: true });
-      this.#dialogUi.showDialogModal([
-        'Usaste el Romperrocas.',
-        'La barrera se ha derrumbado. La salida norte está abierta.',
-      ]);
+      this._controls.lockInput = true;
+      this.cameras.main.fadeOut(450, 0, 0, 0);
+      this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+        dataManager.addFlag(STORY_FLAGS.ROCKS_CLEARED);
+        for (let rockX = 16; rockX <= 22; rockX += 1) {
+          this.#collisionLayer?.removeTileAt(rockX, 0);
+        }
+        this.#backgroundImage?.setTexture(WORLD_ASSET_KEYS.MAIN_1_BACKGROUND_CLEARED);
+        this.#questTracker?.sync({ animateCompletion: true });
+        this.cameras.main.fadeIn(450, 0, 0, 0);
+        this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, () => {
+          this._controls.lockInput = false;
+          this.#dialogUi.showDialogModal([
+            'Usaste el Romperrocas.',
+            'La barrera se ha derrumbado. La plaza del norte está abierta.',
+          ]);
+        });
+      });
       return;
     }
 
@@ -688,6 +706,11 @@ export class WorldScene extends BaseScene {
       this.#wildMonsterEncountered = false;
       return;
     }
+    const playerMonsters = dataManager.store.get(DATA_MANAGER_STORE_KEYS.MONSTERS_IN_PARTY) || [];
+    if (!playerMonsters.some((monster) => monster.currentHp > 0)) {
+      this.#wildMonsterEncountered = false;
+      return;
+    }
     console.log(`[${WorldScene.name}:handlePlayerMovementInEncounterZone] player is in an encounter zone`);
 
     this.#wildMonsterEncountered = Math.random() < 0.2;
@@ -704,7 +727,7 @@ export class WorldScene extends BaseScene {
       /** @type {import('./battle-scene.js').BattleSceneData} */
       const dataToPass = {
         enemyMonsters: [DataUtils.getMonsterById(this, randomMonsterId)],
-        playerMonsters: dataManager.store.get(DATA_MANAGER_STORE_KEYS.MONSTERS_IN_PARTY),
+        playerMonsters,
       };
       this.#startBattleScene(dataToPass);
     }
@@ -2017,6 +2040,30 @@ export class WorldScene extends BaseScene {
   #createMainMapAnimatedDetails() {
     const normalizedArea = this.#sceneData.area?.toUpperCase();
     const isMainMap = normalizedArea === 'MAIN_1' || normalizedArea === WORLD_ASSET_KEYS.MAIN_1_LEVEL;
+    const isPlazaMap = normalizedArea === 'PLAZA_1' || normalizedArea === WORLD_ASSET_KEYS.PLAZA_1_LEVEL;
+
+    if (isPlazaMap) {
+      const plazaBuildings = [
+        { key: WORLD_ASSET_KEYS.PLAZA_GUILD_HALL, x: 345, y: 340, width: 340 },
+        { key: WORLD_ASSET_KEYS.PLAZA_INN, x: 1155, y: 325, width: 330 },
+        { key: WORLD_ASSET_KEYS.PLAZA_MAGIC_SHOP, x: 355, y: 900, width: 330 },
+        { key: WORLD_ASSET_KEYS.PLAZA_WORKSHOP, x: 1155, y: 900, width: 340 },
+      ];
+      plazaBuildings.forEach(({ key, x, y, width }) => {
+        const source = this.textures.get(key).getSourceImage();
+        const height = Math.round((source.height / source.width) * width);
+        this.add.image(x, y, key).setOrigin(0.5, 1).setDisplaySize(width, height).setDepth(y);
+      });
+
+      this.add
+        .image(768, 580, WORLD_ASSET_KEYS.PLAZA_FOUNTAIN)
+        .setOrigin(0.5, 1)
+        .setDisplaySize(230, 190)
+        // The complete fountain PNG intentionally occludes the player.
+        .setDepth(1025);
+      return;
+    }
+
     if (!isMainMap) {
       return;
     }

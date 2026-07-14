@@ -13,7 +13,7 @@ import { BATTLE_SCENE_OPTIONS } from '../common/options.js';
 import { BaseScene } from './base-scene.js';
 import { DataUtils } from '../utils/data-utils.js';
 import { AUDIO_ASSET_KEYS, BATTLE_ASSET_KEYS } from '../assets/asset-keys.js';
-import { playBackgroundMusic, playSoundFx } from '../utils/audio-utils.js';
+import { playSoundFx } from '../utils/audio-utils.js';
 import { calculateExpGainedFromMonster, handleMonsterGainingExperience } from '../utils/leveling-utils.js';
 import { ITEM_CATEGORY } from '../types/typedef.js';
 import { exhaustiveGuard } from '../utils/guard.js';
@@ -200,8 +200,6 @@ export class BattleScene extends BaseScene {
 
     this._controls.lockInput = true;
 
-    // add audio
-    playBackgroundMusic(this, AUDIO_ASSET_KEYS.BATTLE);
   }
 
   /**
