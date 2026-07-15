@@ -27,6 +27,7 @@ import { CutsceneScene } from './cutscene-scene.js';
 import { DialogScene } from './dialog-scene.js';
 import * as TiledUtils from '../utils/tiled-utils.js';
 import * as CameraUtils from '../utils/camera-utils.js';
+import { canUseEntrance, getEntranceSpawnPosition } from '../utils/entrance-utils.js';
 
 import {
   CUSTOM_TILED_TYPES,
@@ -886,6 +887,11 @@ export class WorldScene extends BaseScene {
    * @returns {void}
    */
   #handleEntranceEnteredCallback(entranceName, entranceId, isBuildingEntrance) {
+    const rocksCleared = dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED);
+    if (!canUseEntrance(this.#sceneData.area, entranceName, rocksCleared)) {
+      return;
+    }
+
     this._controls.lockInput = true;
 
     // update player position to match the new entrance data
@@ -899,15 +905,13 @@ export class WorldScene extends BaseScene {
 
       return tempEntranceName === this.#sceneData.area && tempEntranceId === entranceId;
     });
-    // create position player will be placed at and update based on players facing direction
-    let x = entranceObject.x;
-    let y = entranceObject.y - TILE_SIZE;
-    if (this.#player.direction === DIRECTION.UP) {
-      y -= TILE_SIZE;
-    }
-    if (this.#player.direction === DIRECTION.DOWN) {
-      y += TILE_SIZE;
-    }
+    // Building entrances use a fixed safe interior spawn even when approached laterally.
+    const { x, y } = getEntranceSpawnPosition(
+      entranceObject,
+      this.#player.direction,
+      isBuildingEntrance,
+      TILE_SIZE
+    );
 
     this.cameras.main.fadeOut(1000, 0, 0, 0, (camera, progress) => {
       if (progress === 1) {
@@ -2055,12 +2059,19 @@ export class WorldScene extends BaseScene {
         this.add.image(x, y, key).setOrigin(0.5, 1).setDisplaySize(width, height).setDepth(y);
       });
 
-      this.add
-        .image(768, 580, WORLD_ASSET_KEYS.PLAZA_FOUNTAIN)
-        .setOrigin(0.5, 1)
-        .setDisplaySize(230, 190)
-        // The complete fountain PNG intentionally occludes the player.
-        .setDepth(1025);
+      const fountainSource = this.textures.get(WORLD_ASSET_KEYS.PLAZA_FOUNTAIN).getSourceImage();
+      const fountainSplitY = Math.floor(fountainSource.height / 2);
+      const addFountainHalf = (cropY, cropHeight, depth) => {
+        this.add
+          .image(768, 580, WORLD_ASSET_KEYS.PLAZA_FOUNTAIN)
+          .setOrigin(0.5, 1)
+          .setDisplaySize(230, 190)
+          .setCrop(0, cropY, fountainSource.width, cropHeight)
+          .setDepth(depth);
+      };
+
+      addFountainHalf(0, fountainSplitY, 1025);
+      addFountainHalf(fountainSplitY, fountainSource.height - fountainSplitY, 1);
       return;
     }
 

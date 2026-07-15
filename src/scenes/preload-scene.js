@@ -279,7 +279,7 @@ export class PreloadScene extends BaseScene {
 
     const plazaAssetPath = 'assets/images/tameria/plaza';
     this.load.image(WORLD_ASSET_KEYS.PLAZA_1_BACKGROUND, `${plazaAssetPath}/plaza_1_background.png?v=plaza-modular-v1`);
-    this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.PLAZA_1_LEVEL, 'assets/data/plaza_1.json?v=plaza-collision-v3');
+    this.load.tilemapTiledJSON(WORLD_ASSET_KEYS.PLAZA_1_LEVEL, 'assets/data/plaza_1.json?v=plaza-collision-v4');
     this.load.image(WORLD_ASSET_KEYS.PLAZA_GUILD_HALL, `${plazaAssetPath}/guild_hall.png?v=plaza-v1`);
     this.load.image(WORLD_ASSET_KEYS.PLAZA_INN, `${plazaAssetPath}/inn.png?v=plaza-v1`);
     this.load.image(WORLD_ASSET_KEYS.PLAZA_MAGIC_SHOP, `${plazaAssetPath}/magic_shop.png?v=plaza-v1`);
