@@ -45,7 +45,7 @@ function createAuthMiddleware(jwtSecret) {
   };
 }
 
-export function createApp({ repository, jwtSecret, authOrigin = 'http://localhost', staticRoot, twitterUrl = 'https://x.com/' }) {
+export function createApp({ repository, jwtSecret, authOrigin = 'http://localhost', staticRoot, twitterUrl = 'https://x.com/TameriaRH' }) {
   if (!jwtSecret || jwtSecret.length < 32) {
     throw new Error('JWT_SECRET must contain at least 32 characters');
   }

@@ -27,7 +27,7 @@ const app = createApp({
   jwtSecret,
   authOrigin,
   staticRoot: root,
-  twitterUrl: process.env.TWITTER_URL || 'https://x.com/',
+  twitterUrl: process.env.TWITTER_URL || 'https://x.com/TameriaRH',
 });
 const server = app.listen(port, '0.0.0.0', () => {
   console.log(`Tameria server ready on http://0.0.0.0:${port}`);
