@@ -67,7 +67,7 @@ export function createApp({ repository, jwtSecret, authOrigin = 'http://localhos
         "style-src 'self' 'unsafe-inline'",
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
         "font-src 'self' data:",
-        "connect-src 'self' https://rpc.mainnet.chain.robinhood.com",
+        "connect-src 'self' wss://playtameria.com wss://monster-tamer-production.up.railway.app https://rpc.mainnet.chain.robinhood.com",
         "media-src 'self' data: blob:",
         "worker-src 'self' blob:",
         "object-src 'none'",

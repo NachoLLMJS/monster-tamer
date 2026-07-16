@@ -4,7 +4,7 @@ import { exhaustiveGuard } from '../../utils/guard.js';
 import { Character } from './character.js?v=character-depth-v1';
 import { getTargetPositionFromGameObjectPositionAndDirection } from '../../utils/grid-utils.js';
 import { TILE_SIZE } from '../../config.js';
-import { CharacterNameplate } from './character-nameplate.js?v=nameplate-v1';
+import { CharacterNameplate } from './character-nameplate.js?v=nameplate-v2';
 
 /**
  * @typedef PlayerConfigProps

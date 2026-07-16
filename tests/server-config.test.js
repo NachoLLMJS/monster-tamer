@@ -1,6 +1,29 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { resolveAuthOrigin } from '../server/config.js';
+import { resolveAppOrigins, resolveAuthOrigin } from '../server/config.js';
+
+test('production uses playtameria.com canonically while keeping Railway as an allowed legacy origin', () => {
+  assert.deepEqual(
+    resolveAppOrigins({ RAILWAY_PUBLIC_DOMAIN: 'monster-tamer-production.up.railway.app' }, true, 8080),
+    {
+      authOrigin: 'https://playtameria.com',
+      allowedOrigins: [
+        'https://playtameria.com',
+        'https://monster-tamer-production.up.railway.app',
+      ],
+    },
+  );
+});
+
+test('production ignores a stale Railway AUTH_ORIGIN in favor of playtameria.com', () => {
+  assert.equal(
+    resolveAppOrigins({
+      AUTH_ORIGIN: 'https://monster-tamer-production.up.railway.app',
+      RAILWAY_PUBLIC_DOMAIN: 'monster-tamer-production.up.railway.app',
+    }, true, 8080).authOrigin,
+    'https://playtameria.com',
+  );
+});
 
 test('Railway public domain becomes the HTTPS SIWE origin', () => {
   assert.equal(

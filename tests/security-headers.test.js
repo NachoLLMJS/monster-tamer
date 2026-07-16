@@ -40,7 +40,12 @@ test('security policy allows Phaser blobs but only approved script and network o
   const directives = parsePolicy(policies[0]);
   assert.deepEqual(directives['img-src'], ["'self'", 'data:', 'blob:']);
   assert.deepEqual(directives['script-src'], ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net']);
-  assert.deepEqual(directives['connect-src'], ["'self'", 'https://rpc.mainnet.chain.robinhood.com']);
+  assert.deepEqual(directives['connect-src'], [
+    "'self'",
+    'wss://playtameria.com',
+    'wss://monster-tamer-production.up.railway.app',
+    'https://rpc.mainnet.chain.robinhood.com',
+  ]);
   assert.deepEqual(directives['frame-src'], ["'none'"]);
   assert.deepEqual(directives['frame-ancestors'], ["'none'"]);
   assert.equal(policies[0].includes("'unsafe-eval'"), false);

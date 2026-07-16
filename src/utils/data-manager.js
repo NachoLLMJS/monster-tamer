@@ -8,6 +8,7 @@ import { GAME_FLAG } from '../types/typedef.js';
 import { MONSTER_CHAIN_TYPE } from '../monsters/chain-types.js';
 import { saveRemoteProgress } from '../profile/profile-api.js?v=characters-v1';
 import { queueRemoteSave } from './remote-save-queue.js?v=characters-v1';
+import { createAutosaveScheduler } from './autosave.js?v=autosave-v1';
 
 /**
  * @typedef PlayerLocation
@@ -119,6 +120,7 @@ class DataManager extends Phaser.Events.EventEmitter {
   #hasSavedProgress;
   /** @type {Promise<void>} */
   #remoteSavePromise;
+  #autosaveScheduler;
 
   constructor() {
     super();
@@ -231,6 +233,25 @@ class DataManager extends Phaser.Events.EventEmitter {
     return this.#hasSavedProgress;
   }
 
+  enableAutosave() {
+    if (this.#autosaveScheduler || !window.__TAMERIA_SESSION__?.character || window.__TAMERIA_SPECTATOR_MODE__ === true) {
+      return;
+    }
+    this.#autosaveScheduler = createAutosaveScheduler({ save: () => this.saveData() });
+    this.on('changedata', this.#scheduleAutosave, this);
+    window.addEventListener('pagehide', () => {
+      void this.#autosaveScheduler?.flush();
+    });
+  }
+
+  requestAutosave() {
+    this.#scheduleAutosave();
+  }
+
+  #scheduleAutosave() {
+    this.#autosaveScheduler?.schedule();
+  }
+
   /**
    * @returns {void}
    */
@@ -316,6 +337,7 @@ class DataManager extends Phaser.Events.EventEmitter {
       };
     });
     this.#store.set(DATA_MANAGER_STORE_KEYS.INVENTORY, inventory);
+    this.#scheduleAutosave();
   }
 
   /**
@@ -338,6 +360,7 @@ class DataManager extends Phaser.Events.EventEmitter {
       });
     }
     this.#store.set(DATA_MANAGER_STORE_KEYS.INVENTORY, inventory);
+    this.#scheduleAutosave();
   }
 
   /**
@@ -349,6 +372,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     const itemsPickedUp = this.#store.get(DATA_MANAGER_STORE_KEYS.ITEMS_PICKED_UP) || [];
     itemsPickedUp.push(itemId);
     this.#store.set(DATA_MANAGER_STORE_KEYS.ITEMS_PICKED_UP, itemsPickedUp);
+    this.#scheduleAutosave();
   }
 
   /**
@@ -370,6 +394,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     const viewedEvents = new Set(this.#store.get(DATA_MANAGER_STORE_KEYS.VIEWED_EVENTS) || []);
     viewedEvents.add(eventId);
     this.#store.set(DATA_MANAGER_STORE_KEYS.VIEWED_EVENTS, Array.from(viewedEvents));
+    this.#scheduleAutosave();
   }
 
   /**
@@ -388,6 +413,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     const existingFlags = new Set(this.#store.get(DATA_MANAGER_STORE_KEYS.FLAGS) || []);
     existingFlags.add(flag);
     this.#store.set(DATA_MANAGER_STORE_KEYS.FLAGS, Array.from(existingFlags));
+    this.#scheduleAutosave();
   }
 
   /**
@@ -399,6 +425,7 @@ class DataManager extends Phaser.Events.EventEmitter {
     const existingFlags = new Set(this.#store.get(DATA_MANAGER_STORE_KEYS.FLAGS) || []);
     existingFlags.delete(flag);
     this.#store.set(DATA_MANAGER_STORE_KEYS.FLAGS, Array.from(existingFlags));
+    this.#scheduleAutosave();
   }
 
   /**
@@ -409,8 +436,10 @@ class DataManager extends Phaser.Events.EventEmitter {
    */
   addDefeatedNpc(npcId) {
     /** @type {Set<number>} */
-    const defeatedNpcs = this.#store.get(DATA_MANAGER_STORE_KEYS.DEFEATED_NPCS);
+    const defeatedNpcs = new Set(this.#store.get(DATA_MANAGER_STORE_KEYS.DEFEATED_NPCS));
     defeatedNpcs.add(npcId);
+    this.#store.set(DATA_MANAGER_STORE_KEYS.DEFEATED_NPCS, defeatedNpcs);
+    this.#scheduleAutosave();
   }
 
   /**

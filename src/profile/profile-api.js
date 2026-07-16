@@ -64,6 +64,7 @@ export async function saveRemoteProgress(session, progress, version) {
   return apiRequest(`/api/characters/${encodeURIComponent(session.character.id)}/progress`, {
     token: session.token,
     method: 'PUT',
+    keepalive: true,
     body: JSON.stringify({ progress, version }),
   });
 }

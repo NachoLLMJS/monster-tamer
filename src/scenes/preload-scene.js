@@ -404,6 +404,7 @@ export class PreloadScene extends BaseScene {
     if (!dataManager.hasSavedProgress()) {
       dataManager.startNewGame();
     }
+    dataManager.enableAutosave();
     this.scene.start(SCENE_KEYS.WORLD_SCENE);
   }
 

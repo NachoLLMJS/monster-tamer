@@ -11,3 +11,15 @@ export function resolveAuthOrigin(env, isProduction, port) {
   }
   return url.origin;
 }
+
+export function resolveAppOrigins(env, isProduction, port) {
+  const canonicalEnv = isProduction
+    ? { ...env, AUTH_ORIGIN: 'https://playtameria.com' }
+    : env;
+  const authOrigin = resolveAuthOrigin(canonicalEnv, isProduction, port);
+  const allowedOrigins = new Set([authOrigin]);
+  if (env.RAILWAY_PUBLIC_DOMAIN) {
+    allowedOrigins.add(`https://${env.RAILWAY_PUBLIC_DOMAIN}`);
+  }
+  return { authOrigin, allowedOrigins: [...allowedOrigins] };
+}

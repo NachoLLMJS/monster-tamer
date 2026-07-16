@@ -1,14 +1,15 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createApp } from './app.js';
-import { resolveAuthOrigin } from './config.js';
+import { resolveAppOrigins } from './config.js';
+import { attachPresenceServer } from './presence.js';
 import { createMemoryRepository, createPostgresRepository } from './repository.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const isProduction = process.env.NODE_ENV === 'production';
 const port = Number(process.env.PORT ?? 3000);
 const jwtSecret = process.env.JWT_SECRET ?? (isProduction ? '' : 'local-development-secret-change-me-123456');
-const authOrigin = resolveAuthOrigin(process.env, isProduction, port);
+const { authOrigin, allowedOrigins } = resolveAppOrigins(process.env, isProduction, port);
 
 if (!jwtSecret || jwtSecret.length < 32) {
   throw new Error('Set JWT_SECRET to a random value with at least 32 characters.');
@@ -35,9 +36,11 @@ const server = app.listen(port, '0.0.0.0', () => {
     console.warn('Using volatile in-memory storage. Set DATABASE_URL for persistent profiles.');
   }
 });
+const presence = attachPresenceServer({ server, repository, jwtSecret, allowedOrigins });
 
 async function shutdown(signal) {
   console.log(`${signal} received, shutting down.`);
+  await presence.close();
   server.close(async () => {
     await repository.close();
     process.exit(0);

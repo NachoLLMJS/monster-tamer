@@ -1,7 +1,9 @@
 import Phaser from '../lib/phaser.js';
 import { AUDIO_ASSET_KEYS, WORLD_ASSET_KEYS } from '../assets/asset-keys.js';
 import { SCENE_KEYS } from './scene-keys.js';
-import { Player } from '../world/characters/player.js?v=nameplate-v1';
+import { Player } from '../world/characters/player.js?v=nameplate-v2';
+import { PresenceClient } from '../multiplayer/presence-client.js?v=multiplayer-v1';
+import { RemotePlayer } from '../multiplayer/remote-player.js?v=multiplayer-v1';
 import { DIRECTION } from '../common/direction.js';
 import { ENABLE_ZONE_DEBUGGING, TILED_COLLISION_LAYER_ALPHA, TILE_SIZE } from '../config.js';
 import { DATA_MANAGER_STORE_KEYS, dataManager } from '../utils/data-manager.js';
@@ -117,6 +119,10 @@ export class WorldScene extends BaseScene {
   #cameraRegions;
   /** @type {{ [key: string]: Phaser.Tilemaps.Tilemap}} */
   #tiledLevelMaps;
+  /** @type {PresenceClient | undefined} */
+  #presenceClient;
+  /** @type {Map<string, RemotePlayer>} */
+  #remotePlayers;
 
   constructor() {
     super({
@@ -333,6 +339,7 @@ export class WorldScene extends BaseScene {
       },
     });
     this.cameras.main.startFollow(this.#player.sprite);
+    this.#startMultiplayerPresence();
 
     // update camera bounds for the given level
     this.#cameraRegions = TiledUtils.createCameraRegions(map);
@@ -373,6 +380,7 @@ export class WorldScene extends BaseScene {
       }
     });
     dataManager.store.set(DATA_MANAGER_STORE_KEYS.GAME_STARTED, true);
+    dataManager.requestAutosave();
 
     // add UI scene for cutscene and dialog
     this.scene.launch(SCENE_KEYS.CUTSCENE_SCENE);
@@ -501,6 +509,67 @@ export class WorldScene extends BaseScene {
     this.#npcs.forEach((npc) => {
       npc.update(time);
     });
+    this.#remotePlayers?.forEach((remotePlayer) => remotePlayer.update());
+  }
+
+  #startMultiplayerPresence() {
+    const spectator = window.__TAMERIA_SPECTATOR_MODE__ === true;
+    const session = window.__TAMERIA_SESSION__;
+    if (!spectator && !session?.token) return;
+
+    this.#remotePlayers = new Map();
+    this.#presenceClient = new PresenceClient({
+      session,
+      spectator,
+      area: this.#sceneData.area,
+      position: { x: this.#player.sprite.x, y: this.#player.sprite.y },
+      direction: this.#player.direction,
+      onMessage: (message) => this.#handlePresenceMessage(message),
+    });
+    this.events.once('shutdown', () => this.#destroyMultiplayerPresence());
+  }
+
+  #handlePresenceMessage(message) {
+    if (message.type === 'snapshot') {
+      this.#remotePlayers.forEach((remotePlayer) => remotePlayer.destroy());
+      this.#remotePlayers.clear();
+      message.players.forEach((player) => this.#upsertRemotePlayer(player));
+      return;
+    }
+    if (message.type === 'player_joined' || message.type === 'player_moved') {
+      this.#upsertRemotePlayer(message.player);
+      return;
+    }
+    if (message.type === 'player_left') {
+      this.#remotePlayers.get(message.playerId)?.destroy();
+      this.#remotePlayers.delete(message.playerId);
+    }
+  }
+
+  #upsertRemotePlayer(player) {
+    const current = this.#remotePlayers.get(player.id);
+    if (current) {
+      current.applyState(player);
+      return;
+    }
+    this.#remotePlayers.set(player.id, new RemotePlayer({ scene: this, player }));
+  }
+
+  #broadcastPlayerState(position, moving) {
+    if (!window.__TAMERIA_SESSION__?.token) return;
+    this.#presenceClient?.sendMovement({
+      x: position.x,
+      y: position.y,
+      direction: this.#player.direction,
+      moving,
+    });
+  }
+
+  #destroyMultiplayerPresence() {
+    this.#presenceClient?.destroy();
+    this.#presenceClient = undefined;
+    this.#remotePlayers?.forEach((remotePlayer) => remotePlayer.destroy());
+    this.#remotePlayers?.clear();
   }
 
   /**
@@ -636,6 +705,8 @@ export class WorldScene extends BaseScene {
       x: this.#player.sprite.x,
       y: this.#player.sprite.y,
     });
+    dataManager.requestAutosave();
+    this.#broadcastPlayerState({ x: this.#player.sprite.x, y: this.#player.sprite.y }, false);
 
     // update camera bounds for given level after player moves
     CameraUtils.updateMainCameraBounds(this, this.#player.sprite, this.#cameraRegions);
@@ -833,6 +904,7 @@ export class WorldScene extends BaseScene {
   #handlePlayerDirectionUpdate() {
     // update player direction on global data store
     dataManager.store.set(DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION, this.#player.direction);
+    this.#broadcastPlayerState({ x: this.#player.sprite.x, y: this.#player.sprite.y }, false);
   }
 
   /**
@@ -1428,6 +1500,7 @@ export class WorldScene extends BaseScene {
    * @returns {void}
    */
   #handlePlayerMovementStarted(position) {
+    this.#broadcastPlayerState(position, true);
     this.#encounterZonePlayerIsEntering = undefined;
 
     /** @type {Phaser.Tilemaps.Tile} */
