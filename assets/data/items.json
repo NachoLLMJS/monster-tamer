@@ -15,8 +15,8 @@
   },
   {
     "id": 3,
-    "name": "Romperrocas",
-    "description": "Herramienta clave entregada por el comerciante. Rompe barreras de roca en el bosque.",
+    "name": "Rock Breaker",
+    "description": "A key tool given to you by the merchant. It breaks rock barriers in the forest.",
     "category": "KEY",
     "effect": "NONE"
   }

@@ -123,8 +123,8 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "¡Bienvenido al pueblo!",
-            "Cada día que pase serás más fuerte. ¡Confío en ti!"
+            "Welcome to town!",
+            "You will grow stronger every day. I believe in you!"
           ]
         }
       }
@@ -275,7 +275,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "Primero habla con el Profesor CZ. Tiene una misión importante para ti."
+            "Talk to Professor CZ first. He has an important mission for you."
           ]
         }
       },
@@ -289,8 +289,8 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "CZ me avisó de que vendrías. Las rocas del Bosque Esmeralda bloquean la salida norte.",
-            "Toma este Romperrocas. Acércate a la barrera mirando hacia arriba y pulsa ESPACIO."
+            "CZ told me you were coming. Rocks in Emerald Forest are blocking the northern exit.",
+            "Take this Rock Breaker. Approach the barrier, face upward, and press SPACE."
           ]
         }
       },
@@ -326,7 +326,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "Ya tienes el Romperrocas. Habla con el guardabosques antes de entrar al bosque."
+            "You already have the Rock Breaker. Talk to the forest ranger before entering the forest."
           ]
         }
       }
@@ -359,7 +359,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "No entres todavía al bosque. Primero consigue una herramienta para apartar las rocas."
+            "Do not enter the forest yet. First, find a tool to clear the rocks."
           ]
         }
       },
@@ -373,8 +373,8 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "Así que llevas el Romperrocas... perfecto.",
-            "La salida norte del bosque está bloqueada por cinco rocas. Antes de ir, prepara a tu equipo con la enfermera."
+            "So you have the Rock Breaker... perfect.",
+            "Five rocks block the forest's northern exit. Before you go, prepare your team with the nurse."
           ]
         }
       },
@@ -397,7 +397,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "La enfermera está cerca. Prepárate y derrota al rival que vigila el camino norte."
+            "The nurse is nearby. Get ready and defeat the rival guarding the northern road."
           ]
         }
       }
@@ -430,7 +430,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "Puedo curar a tu equipo, pero habla antes con el guardabosques para conocer la ruta."
+            "I can heal your team, but talk to the forest ranger first to learn the route."
           ]
         }
       },
@@ -444,7 +444,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "El guardabosques me contó tu misión. Voy a dejar a todo tu equipo listo para el bosque."
+            "The forest ranger told me about your mission. I will get your whole team ready for the forest."
           ]
         }
       },
@@ -477,7 +477,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "Tu equipo está listo. Ahora derrota al rival rubio del camino norte."
+            "Your team is ready. Now defeat the blond rival on the northern road."
           ]
         }
       }
@@ -510,7 +510,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "No pienso dejarte pasar sin preparación. Habla con el guardabosques y la enfermera."
+            "I will not let you pass unprepared. Talk to the forest ranger and the nurse."
           ]
         }
       },
@@ -522,7 +522,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "¿Quieres llegar al Bosque Esmeralda? Primero tendrás que vencerme."
+            "Want to reach Emerald Forest? You will have to defeat me first."
           ]
         }
       },
@@ -538,9 +538,9 @@
             7
           ],
           "assetKey": "TRAINER_YOUTH_BOY_GREEN_RIVAL",
-          "trainerName": "Rival del Norte",
+          "trainerName": "Northern Rival",
           "trainerLostMessages": [
-            "Has ganado. El camino al bosque es tuyo."
+            "You won. The path to the forest is yours."
           ]
         }
       },
@@ -551,7 +551,7 @@
         "type": "MESSAGE",
         "data": {
           "messages": [
-            "El Bosque Esmeralda está al norte. Usa el Romperrocas frente a la barrera."
+            "Emerald Forest is to the north. Use the Rock Breaker in front of the barrier."
           ]
         }
       }

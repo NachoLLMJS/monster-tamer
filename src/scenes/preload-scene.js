@@ -182,7 +182,7 @@ export class PreloadScene extends BaseScene {
     this.load.image(UI_ASSET_KEYS.BLUE_BUTTON_SELECTED, `${kenneysAssetPath}/ui-pack/blue_button00.png`);
 
     // load json data
-    const dataVersion = 'chain-monsters-v5';
+    const dataVersion = 'english-v1';
     this.load.json(DATA_ASSET_KEYS.ATTACKS, `assets/data/attacks.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ANIMATIONS, `assets/data/animations.json?v=${dataVersion}`);
     this.load.json(DATA_ASSET_KEYS.ITEMS, `assets/data/items.json?v=${dataVersion}`);
@@ -401,7 +401,9 @@ export class PreloadScene extends BaseScene {
     // set global audio based on data manager settings
     setGlobalSoundSettings(this);
 
-    dataManager.startNewGame();
+    if (!dataManager.hasSavedProgress()) {
+      dataManager.startNewGame();
+    }
     this.scene.start(SCENE_KEYS.WORLD_SCENE);
   }
 

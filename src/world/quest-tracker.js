@@ -6,64 +6,64 @@ const STORY_QUESTS = Object.freeze([
   {
     id: 'meet-mother',
     number: 1,
-    title: 'Habla con tu madre',
-    description: 'Te espera frente a la casa con el grafiti de Robinhood.',
+    title: 'Talk to your mother',
+    description: 'She is waiting outside the house with the Robinhood graffiti.',
     requiresEvents: [],
     completesOnEvent: 1,
   },
   {
     id: 'meet-professor',
     number: 2,
-    title: 'Ve a ver al Profesor CZ',
-    description: 'Está junto a la casa vecina. Habla con él antes de entrar en la hierba.',
+    title: 'Meet Professor CZ',
+    description: 'He is by the house next door. Talk to him before entering the tall grass.',
     requiresEvents: [1],
     completesOnEvent: 2,
   },
   {
     id: 'get-rock-breaker',
     number: 3,
-    title: 'Consigue el Romperrocas',
-    description: 'Busca al comerciante anciano del camino norte de Tameria.',
+    title: 'Get the Rock Breaker',
+    description: 'Find the elderly merchant on Tameria’s northern road.',
     requiresEvents: [2],
     completesOnFlag: STORY_FLAGS.HAS_ROCK_BREAKER,
   },
   {
     id: 'talk-ranger',
     number: 4,
-    title: 'Habla con el guardabosques',
-    description: 'Te explicará cómo atravesar la barrera del Bosque Esmeralda.',
+    title: 'Talk to the forest ranger',
+    description: 'He will explain how to cross the Emerald Forest barrier.',
     requiresFlags: [STORY_FLAGS.HAS_ROCK_BREAKER],
     completesOnFlag: STORY_FLAGS.RANGER_BRIEFED,
   },
   {
     id: 'prepare-team',
     number: 5,
-    title: 'Prepara a tu equipo',
-    description: 'Visita a la enfermera del camino norte antes de continuar.',
+    title: 'Prepare your team',
+    description: 'Visit the nurse on the northern road before continuing.',
     requiresFlags: [STORY_FLAGS.RANGER_BRIEFED],
     completesOnFlag: STORY_FLAGS.FOREST_SUPPLIES_READY,
   },
   {
     id: 'defeat-north-rival',
     number: 6,
-    title: 'Derrota al Rival del Norte',
-    description: 'El entrenador rubio vigila el acceso al Bosque Esmeralda.',
+    title: 'Defeat the Northern Rival',
+    description: 'The blond trainer guards the entrance to Emerald Forest.',
     requiresFlags: [STORY_FLAGS.FOREST_SUPPLIES_READY],
     completesOnDefeatedNpc: 9,
   },
   {
     id: 'break-rock-gate',
     number: 7,
-    title: 'Rompe la barrera de rocas',
-    description: 'Ve al extremo norte de Tameria, mira hacia las rocas y pulsa ESPACIO.',
+    title: 'Break the rock barrier',
+    description: 'Go to the northern edge of Tameria, face the rocks, and press SPACE.',
     requiresDefeatedNpcs: [9],
     completesOnFlag: STORY_FLAGS.ROCKS_CLEARED,
   },
   {
     id: 'enter-north-plaza',
     number: 8,
-    title: 'Entra en la Plaza del Norte',
-    description: 'Cruza el paso que acabas de abrir y explora la nueva ciudad.',
+    title: 'Enter the Northern Plaza',
+    description: 'Cross the passage you just opened and explore the new city.',
     requiresFlags: [STORY_FLAGS.ROCKS_CLEARED],
     completesOnArea: 'plaza_1',
   },
@@ -187,7 +187,7 @@ export class QuestTracker {
     card.style.boxShadow = '0 0 0 1px rgba(199,255,0,.35), 0 14px 36px rgba(0,0,0,.48), 0 0 28px rgba(199,255,0,.18)';
     const status = card.querySelector('[data-role="status"]');
     if (status) {
-      status.textContent = '✓ COMPLETADA';
+      status.textContent = '✓ COMPLETED';
       status.style.color = '#c7ff00';
     }
     await card.animate(
@@ -239,7 +239,7 @@ export class QuestTracker {
     card.innerHTML = `
       <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 8px,rgba(199,255,0,.025) 8px 9px);pointer-events:none"></div>
       <div style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:31px;height:31px;border-radius:7px;display:grid;place-items:center;background:#c7ff00;color:#0a0d0b;font:900 17px monospace;box-shadow:0 0 18px rgba(199,255,0,.22)">${String(quest.number).padStart(2, '0')}</div>
-      <div data-role="status" style="position:relative;color:#c7ff00;font:700 10px monospace;letter-spacing:.2em;margin-bottom:4px">MISIÓN DE HISTORIA</div>
+      <div data-role="status" style="position:relative;color:#c7ff00;font:700 10px monospace;letter-spacing:.2em;margin-bottom:4px">STORY QUEST</div>
       <div style="position:relative;font-size:18px;line-height:1.05;letter-spacing:.025em;text-shadow:0 2px 0 #000">${quest.title}</div>
       <div style="position:relative;margin-top:6px;color:#aebbb5;font:12px/1.3 monospace">${quest.description}</div>
     `;

@@ -1,10 +1,15 @@
-/assets/images
+/assets/images/*
+!/assets/images/intro/
+!/assets/images/intro/**
 /assets/fonts
 /assets/audio
 .DS_Store
 tasks-wip.todo
 notes.md
 node_modules
+.env
+.env.*
+!.env.example
 .vscode/vscode-kanban.json
 
 # related to bundling

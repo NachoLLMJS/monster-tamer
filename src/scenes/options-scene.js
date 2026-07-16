@@ -15,6 +15,7 @@ import { exhaustiveGuard } from '../utils/guard.js';
 import { DATA_MANAGER_STORE_KEYS, dataManager } from '../utils/data-manager.js';
 import { BaseScene } from './base-scene.js';
 import { setGlobalSoundSettings } from '../utils/audio-utils.js';
+import { persistOptionsProgress } from '../utils/persist-options-progress.js?v=characters-v1';
 
 /** @type {Phaser.Types.GameObjects.Text.TextStyle} */
 const OPTIONS_TEXT_STYLE = {
@@ -252,7 +253,11 @@ export class OptionsScene extends BaseScene {
       [DATA_MANAGER_STORE_KEYS.OPTIONS_VOLUME]: this.#selectedVolumeOption,
       [DATA_MANAGER_STORE_KEYS.OPTIONS_MENU_COLOR]: this.#selectedMenuColorOption,
     });
-    dataManager.saveData();
+    void persistOptionsProgress(
+      window.__TAMERIA_SESSION__,
+      () => dataManager.saveData(),
+      (error) => console.error('Unable to save options to Railway.', error),
+    );
   }
 
   /**

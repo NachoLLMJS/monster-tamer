@@ -1,7 +1,7 @@
 import Phaser from '../lib/phaser.js';
 import { AUDIO_ASSET_KEYS, WORLD_ASSET_KEYS } from '../assets/asset-keys.js';
 import { SCENE_KEYS } from './scene-keys.js';
-import { Player } from '../world/characters/player.js?v=character-depth-v1';
+import { Player } from '../world/characters/player.js?v=nameplate-v1';
 import { DIRECTION } from '../common/direction.js';
 import { ENABLE_ZONE_DEBUGGING, TILED_COLLISION_LAYER_ALPHA, TILE_SIZE } from '../config.js';
 import { DATA_MANAGER_STORE_KEYS, dataManager } from '../utils/data-manager.js';
@@ -13,7 +13,7 @@ import {
 import { CANNOT_READ_SIGN_TEXT, SAMPLE_TEXT } from '../utils/text-utils.js';
 import { NPC, NPC_MOVEMENT_PATTERN } from '../world/characters/npc.js?v=character-depth-v1';
 import { WorldMenu } from '../world/world-menu.js?v=character-depth-v1';
-import { QuestTracker } from '../world/quest-tracker.js';
+import { QuestTracker } from '../world/quest-tracker.js?v=english-v1';
 import { STORY_FLAGS } from '../world/story-flags.js';
 import { BaseScene } from './base-scene.js';
 import { DataUtils } from '../utils/data-utils.js';
@@ -55,17 +55,6 @@ const RIGHT_HOUSE_AC_FAN_POSITIONS = Object.freeze([
   { x: 1426, y: 4429 },
   { x: 1451, y: 4429 },
 ]);
-const DEV_COLLISION_GID = 189;
-const DEV_NO_POKEMONS_STORAGE_KEY = 'tameriaDevNoPokemons';
-const DEV_MAP_OPTIONS = Object.freeze([
-  { area: 'main_1', label: 'Tameria', isInterior: false, position: { x: 896, y: 4736 } },
-  { area: 'forest_1', label: 'Bosque / Rocas', isInterior: false, position: { x: 576, y: 640 } },
-  { area: 'plaza_1', label: 'Plaza Spellborne', isInterior: false, position: { x: 768, y: 896 } },
-  { area: 'building_1', label: 'Centro de curación', isInterior: true, position: { x: 320, y: 448 } },
-  { area: 'building_2', label: 'Casa vecina', isInterior: true, position: { x: 320, y: 448 } },
-  { area: 'building_3', label: 'Tienda', isInterior: true, position: { x: 320, y: 448 } },
-]);
-
 export class WorldScene extends BaseScene {
   /** @type {Player} */
   #player;
@@ -205,7 +194,7 @@ export class WorldScene extends BaseScene {
     );
 
     this.#wildMonsterEncountered = false;
-    this.#wildEncountersDisabled = window.localStorage.getItem(DEV_NO_POKEMONS_STORAGE_KEY) === 'true';
+    this.#wildEncountersDisabled = window.__TAMERIA_SPECTATOR_MODE__ === true;
     this.#npcPlayerIsInteractingWith = undefined;
     this.#items = [];
     this.#lastNpcEventHandledIndex = -1;
@@ -256,7 +245,6 @@ export class WorldScene extends BaseScene {
       return;
     }
     this.#collisionLayer.setAlpha(TILED_COLLISION_LAYER_ALPHA).setDepth(2);
-    this.#createDevCollisionEditor(this.#collisionLayer, map);
 
     // create interactive layer
     const hasSignLayer = map.getObjectLayer(OBJECT_LAYER_NAMES.SIGN) !== null;
@@ -323,6 +311,7 @@ export class WorldScene extends BaseScene {
     // create player and have camera focus on the player
     this.#player = new Player({
       scene: this,
+      displayName: window.__TAMERIA_SESSION__?.character?.name,
       position: dataManager.store.get(DATA_MANAGER_STORE_KEYS.PLAYER_POSITION),
       direction: dataManager.store.get(DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION),
       collisionLayer: this.#collisionLayer,
@@ -448,8 +437,12 @@ export class WorldScene extends BaseScene {
 
         if (this.#menu.selectedMenuOption === 'SAVE') {
           this.#menu.hide();
-          dataManager.saveData();
-          this.#dialogUi.showDialogModal(['Game progress has been saved']);
+          dataManager.saveData()
+            .then(() => this.#dialogUi.showDialogModal(['Game progress has been saved']))
+            .catch((error) => {
+              console.error('Unable to save game progress', error);
+              this.#dialogUi.showDialogModal(['Unable to save progress. Check your connection and try again.']);
+            });
         }
 
         if (this.#menu.selectedMenuOption === 'MONSTERS') {
@@ -534,8 +527,8 @@ export class WorldScene extends BaseScene {
     if (isMainRockGate && !dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED)) {
       if (!dataManager.getFlags().has(STORY_FLAGS.HAS_ROCK_BREAKER)) {
         this.#dialogUi.showDialogModal([
-          'Estas rocas bloquean la salida norte.',
-          'Necesitas el Romperrocas. El comerciante de objetos de Tameria puede ayudarte.',
+          'These rocks block the northern exit.',
+          'You need the Rock Breaker. Tameria’s item merchant can help you.',
         ]);
         return;
       }
@@ -553,8 +546,8 @@ export class WorldScene extends BaseScene {
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE, () => {
           this._controls.lockInput = false;
           this.#dialogUi.showDialogModal([
-            'Usaste el Romperrocas.',
-            'La barrera se ha derrumbado. La plaza del norte está abierta.',
+            'You used the Rock Breaker.',
+            'The barrier has collapsed. The Northern Plaza is now open.',
           ]);
         });
       });
@@ -1505,542 +1498,8 @@ export class WorldScene extends BaseScene {
       });
   }
 
-  /**
-   * @param {Phaser.Tilemaps.TilemapLayer} collisionLayer
-   * @param {Phaser.Tilemaps.Tilemap} map
-   * @returns {void}
-   */
-  #createDevCollisionEditor(collisionLayer, map) {
-    const editorGrid = Array.from({ length: map.height }, (_row, y) =>
-      Array.from({ length: map.width }, (_col, x) => {
-        const tile = collisionLayer.getTileAt(x, y);
-        return tile && tile.index > 0 ? DEV_COLLISION_GID : 0;
-      })
-    );
-    const state = {
-      enabled: false,
-      showGrid: true,
-      changes: /** @type {{x: number, y: number, value: number, before: number, after: number, action: string}[]} */ ([]),
-      hoverTile: /** @type {{x: number, y: number, value: number} | null} */ (null),
-      lastClickedTile: /** @type {{x: number, y: number, before: number, after: number} | null} */ (null),
-      lastInput: 'none',
-    };
-    const changeMap = new Map();
-    const overlay = this.add.graphics().setDepth(9998).setVisible(false);
-    const helpText = this.add
-      .text(
-        8,
-        8,
-        '',
-        {
-          fontFamily: 'monospace',
-          fontSize: '14px',
-          color: '#ffffff',
-          backgroundColor: '#000000cc',
-          padding: { x: 8, y: 6 },
-        }
-      )
-      .setScrollFactor(0)
-      .setDepth(9999)
-      .setVisible(false);
 
-    const getGridValueAt = (x, y) => editorGrid[y]?.[x] || 0;
-
-    const writeCollisionTile = (x, y, value) => {
-      // Keep the editor independent from Phaser's TilemapLayer mutation APIs.
-      // putTileAt/removeTileAt can throw in this project because the collision tileset/layer
-      // is hidden and not safe to mutate live. The editor is the source of truth for visual
-      // marking and export; the JSON patch is then applied to main_1.json and reloaded.
-      editorGrid[y][x] = value > 0 ? DEV_COLLISION_GID : 0;
-    };
-
-    const updateHelpText = () => {
-      const hoverText = state.hoverTile
-        ? `hover tile: (${state.hoverTile.x},${state.hoverTile.y}) value=${state.hoverTile.value}`
-        : 'hover tile: move mouse over map';
-      const clickedText = state.lastClickedTile
-        ? `last click: (${state.lastClickedTile.x},${state.lastClickedTile.y}) ${state.lastClickedTile.before}->${state.lastClickedTile.after}`
-        : 'last click: none';
-      helpText.setText([
-        'DEV COLLISION EDITOR - STABLE GRID MODE',
-        'F9: close/open   CLICK: toggle collision in editor grid',
-        'G: grid on/off   C: copy/export stable snapshot   R: reset session changes',
-        hoverText,
-        clickedText,
-        `changes: ${state.changes.length}`,
-        `last input: ${state.lastInput}`,
-        `url: ${window.location.href}`,
-        'Yellow = collision from editorGrid. Clicks are visual/export only; reload after JSON is applied.',
-      ]);
-    };
-
-    const rememberChange = (x, y, value, before) => {
-      const key = `${x},${y}`;
-      changeMap.set(key, {
-        x,
-        y,
-        value,
-        before,
-        after: value,
-        action: value > 0 ? 'set-collision' : 'clear-collision',
-      });
-      state.changes = Array.from(changeMap.values()).sort((a, b) => a.y - b.y || a.x - b.x);
-      updateHelpText();
-    };
-
-    const redraw = () => {
-      overlay.clear();
-      if (!state.enabled) {
-        return;
-      }
-      const tileWidth = map.tileWidth;
-      const tileHeight = map.tileHeight;
-      for (let y = 0; y < map.height; y += 1) {
-        for (let x = 0; x < map.width; x += 1) {
-          const value = getGridValueAt(x, y);
-          if (value > 0) {
-            overlay.fillStyle(0xffc400, 0.42);
-            overlay.fillRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-            overlay.lineStyle(2, 0xfff2a3, 0.95);
-            overlay.strokeRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-          } else if (state.showGrid) {
-            overlay.lineStyle(1, 0x00aaff, 0.18);
-            overlay.strokeRect(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
-          }
-        }
-      }
-      if (state.hoverTile) {
-        overlay.lineStyle(3, 0x00ff66, 1);
-        overlay.strokeRect(
-          state.hoverTile.x * tileWidth,
-          state.hoverTile.y * tileHeight,
-          tileWidth,
-          tileHeight
-        );
-      }
-    };
-
-    const getOrCreateExportPanel = () => {
-      let panel = document.getElementById('tameria-collision-export-panel');
-      if (panel) {
-        return panel;
-      }
-
-      panel = document.createElement('div');
-      panel.id = 'tameria-collision-export-panel';
-      panel.style.position = 'fixed';
-      panel.style.right = '12px';
-      panel.style.bottom = '12px';
-      panel.style.zIndex = '999999';
-      panel.style.width = '460px';
-      panel.style.maxWidth = 'calc(100vw - 24px)';
-      panel.style.background = '#111827';
-      panel.style.border = '2px solid #f59e0b';
-      panel.style.borderRadius = '8px';
-      panel.style.padding = '10px';
-      panel.style.color = '#ffffff';
-      panel.style.font = '12px monospace';
-      panel.innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;">
-          <strong>Collision stable-grid export</strong>
-          <button data-role="close" style="cursor:pointer;">x</button>
-        </div>
-        <textarea data-role="json" style="width:100%;height:220px;box-sizing:border-box;font:12px monospace;"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button data-role="copy" style="cursor:pointer;">Copy</button>
-          <button data-role="download" style="cursor:pointer;">Download</button>
-        </div>
-      `;
-      document.body.appendChild(panel);
-      panel.querySelector('[data-role="close"]')?.addEventListener('click', () => {
-        panel?.remove();
-      });
-      return panel;
-    };
-
-    const createCollisionWindowSnapshot = () => {
-      const changedTiles = state.changes.length > 0 ? state.changes : state.lastClickedTile ? [state.lastClickedTile] : [];
-      const minX = changedTiles.length > 0 ? Math.min(...changedTiles.map((tile) => tile.x)) : 10;
-      const maxX = changedTiles.length > 0 ? Math.max(...changedTiles.map((tile) => tile.x)) : 29;
-      const minY = changedTiles.length > 0 ? Math.min(...changedTiles.map((tile) => tile.y)) : 68;
-      const maxY = changedTiles.length > 0 ? Math.max(...changedTiles.map((tile) => tile.y)) : 79;
-      const padding = 3;
-      const bounds = {
-        x: Math.max(0, minX - padding),
-        y: Math.max(0, minY - padding),
-        width: Math.min(map.width, maxX + padding + 1) - Math.max(0, minX - padding),
-        height: Math.min(map.height, maxY + padding + 1) - Math.max(0, minY - padding),
-      };
-      const rows = [];
-      for (let y = bounds.y; y < bounds.y + bounds.height; y += 1) {
-        const row = [];
-        for (let x = bounds.x; x < bounds.x + bounds.width; x += 1) {
-          row.push(getGridValueAt(x, y));
-        }
-        rows.push(row);
-      }
-      return { ...bounds, rows };
-    };
-
-    const createFullCollisionSnapshot = () => ({
-      width: map.width,
-      height: map.height,
-      rows: editorGrid.map((row) => row.slice()),
-    });
-
-    const exportPatch = () => {
-      const playerTile = this.#player?.sprite
-        ? {
-            x: Math.floor(this.#player.sprite.x / map.tileWidth),
-            y: Math.floor(this.#player.sprite.y / map.tileHeight),
-            worldX: this.#player.sprite.x,
-            worldY: this.#player.sprite.y,
-          }
-        : null;
-      const patch = {
-        map: `${this.#sceneData.area}.json`,
-        layer: 'Collision',
-        collisionGid: DEV_COLLISION_GID,
-        exportType: 'snapshot-v4-stable-grid',
-        instructions: 'Use snapshot/window from editorGrid as authoritative. It is independent of Phaser tile render caching.',
-        source: {
-          href: window.location.href,
-          userAgent: window.navigator.userAgent,
-          mapWidth: map.width,
-          mapHeight: map.height,
-          tileWidth: map.tileWidth,
-          tileHeight: map.tileHeight,
-        },
-        hoverTile: state.hoverTile,
-        lastClickedTile: state.lastClickedTile,
-        playerTile,
-        changes: state.changes,
-        window: createCollisionWindowSnapshot(),
-        snapshot: createFullCollisionSnapshot(),
-      };
-      const json = JSON.stringify(patch, null, 2);
-      window.__tameriaCollisionPatch = patch;
-      window.localStorage.setItem('tameriaCollisionPatch', json);
-      console.log('TAMERIA_COLLISION_PATCH_STABLE_GRID', json);
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(json).catch(() => {});
-      }
-
-      const panel = getOrCreateExportPanel();
-      const textarea = /** @type {HTMLTextAreaElement | null} */ (panel.querySelector('[data-role="json"]'));
-      const copyButton = panel.querySelector('[data-role="copy"]');
-      const downloadButton = panel.querySelector('[data-role="download"]');
-      if (textarea) {
-        textarea.value = json;
-        textarea.focus();
-        textarea.select();
-      }
-      copyButton?.replaceWith(copyButton.cloneNode(true));
-      downloadButton?.replaceWith(downloadButton.cloneNode(true));
-      panel.querySelector('[data-role="copy"]')?.addEventListener('click', () => {
-        if (textarea) {
-          textarea.focus();
-          textarea.select();
-        }
-        navigator.clipboard?.writeText(json).catch(() => {});
-      });
-      panel.querySelector('[data-role="download"]')?.addEventListener('click', () => {
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'tameria-collision-stable-grid-patch.json';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-      });
-      updateHelpText();
-      helpText.setText(`${helpText.text}\nStable-grid export updated/copied (${state.changes.length} changes).`);
-    };
-
-    const setEditorEnabled = (enabled) => {
-      state.enabled = enabled;
-      overlay.setVisible(state.enabled);
-      helpText.setVisible(state.enabled);
-      updateHelpText();
-      redraw();
-    };
-
-    const toggleEditor = () => {
-      setEditorEnabled(!state.enabled);
-    };
-
-    const resetSessionChanges = () => {
-      changeMap.clear();
-      state.changes = [];
-      state.lastClickedTile = null;
-      updateHelpText();
-      redraw();
-    };
-
-    const devButton = document.createElement('button');
-    devButton.textContent = 'DEV COLLISION';
-    devButton.style.position = 'fixed';
-    devButton.style.right = '12px';
-    devButton.style.top = '12px';
-    devButton.style.zIndex = '999999';
-    devButton.style.padding = '8px 10px';
-    devButton.style.font = '700 12px monospace';
-    devButton.style.color = '#ffffff';
-    devButton.style.background = '#111827';
-    devButton.style.border = '2px solid #f59e0b';
-    devButton.style.borderRadius = '6px';
-    devButton.style.cursor = 'pointer';
-    devButton.title = 'Open/close collision editor';
-    document.body.appendChild(devButton);
-    devButton.addEventListener('click', () => {
-      this.game.canvas.focus();
-      toggleEditor();
-    });
-
-    const noPokemonsButton = document.createElement('button');
-    noPokemonsButton.style.position = 'fixed';
-    noPokemonsButton.style.right = '12px';
-    noPokemonsButton.style.top = '54px';
-    noPokemonsButton.style.zIndex = '999999';
-    noPokemonsButton.style.padding = '8px 10px';
-    noPokemonsButton.style.font = '700 12px monospace';
-    noPokemonsButton.style.color = '#ffffff';
-    noPokemonsButton.style.border = '2px solid #f59e0b';
-    noPokemonsButton.style.borderRadius = '6px';
-    noPokemonsButton.style.cursor = 'pointer';
-    noPokemonsButton.title = 'Activar/desactivar encuentros de Pokémon salvajes';
-    const updateNoPokemonsButton = () => {
-      noPokemonsButton.textContent = `NO POKEMONS: ${this.#wildEncountersDisabled ? 'ON' : 'OFF'}`;
-      noPokemonsButton.style.background = this.#wildEncountersDisabled ? '#7f1d1d' : '#111827';
-    };
-    updateNoPokemonsButton();
-    document.body.appendChild(noPokemonsButton);
-    noPokemonsButton.addEventListener('click', () => {
-      this.#wildEncountersDisabled = !this.#wildEncountersDisabled;
-      window.localStorage.setItem(DEV_NO_POKEMONS_STORAGE_KEY, String(this.#wildEncountersDisabled));
-      updateNoPokemonsButton();
-      this.game.canvas.focus();
-    });
-
-    const changeMapButton = document.createElement('button');
-    changeMapButton.textContent = 'CHANGE MAP';
-    changeMapButton.style.position = 'fixed';
-    changeMapButton.style.right = '12px';
-    changeMapButton.style.top = '96px';
-    changeMapButton.style.zIndex = '999999';
-    changeMapButton.style.padding = '8px 10px';
-    changeMapButton.style.font = '700 12px monospace';
-    changeMapButton.style.color = '#ffffff';
-    changeMapButton.style.background = '#111827';
-    changeMapButton.style.border = '2px solid #f59e0b';
-    changeMapButton.style.borderRadius = '6px';
-    changeMapButton.style.cursor = 'pointer';
-    changeMapButton.title = 'Teleportarse a otro mapa';
-    document.body.appendChild(changeMapButton);
-
-    const mapPanel = document.createElement('div');
-    mapPanel.style.position = 'fixed';
-    mapPanel.style.right = '12px';
-    mapPanel.style.top = '138px';
-    mapPanel.style.zIndex = '999999';
-    mapPanel.style.display = 'none';
-    mapPanel.style.gap = '6px';
-    mapPanel.style.padding = '8px';
-    mapPanel.style.background = '#111827';
-    mapPanel.style.border = '2px solid #f59e0b';
-    mapPanel.style.borderRadius = '6px';
-
-    const mapSelect = document.createElement('select');
-    mapSelect.style.padding = '6px';
-    mapSelect.style.font = '700 12px monospace';
-    DEV_MAP_OPTIONS.forEach((option) => {
-      const element = document.createElement('option');
-      element.value = option.area;
-      element.textContent = option.label;
-      element.selected = option.area === this.#sceneData.area;
-      mapSelect.appendChild(element);
-    });
-
-    const teleportButton = document.createElement('button');
-    teleportButton.textContent = 'TELEPORT';
-    teleportButton.style.padding = '6px 8px';
-    teleportButton.style.font = '700 12px monospace';
-    teleportButton.style.color = '#ffffff';
-    teleportButton.style.background = '#166534';
-    teleportButton.style.border = '1px solid #86efac';
-    teleportButton.style.borderRadius = '4px';
-    teleportButton.style.cursor = 'pointer';
-    mapPanel.append(mapSelect, teleportButton);
-    document.body.appendChild(mapPanel);
-
-    changeMapButton.addEventListener('click', () => {
-      mapPanel.style.display = mapPanel.style.display === 'none' ? 'flex' : 'none';
-    });
-    teleportButton.addEventListener('click', () => {
-      const destination = DEV_MAP_OPTIONS.find((option) => option.area === mapSelect.value);
-      if (!destination) {
-        return;
-      }
-      this._controls.lockInput = true;
-      dataManager.store.set(DATA_MANAGER_STORE_KEYS.PLAYER_POSITION, { ...destination.position });
-      dataManager.store.set(DATA_MANAGER_STORE_KEYS.PLAYER_DIRECTION, DIRECTION.UP);
-      this.scene.start(SCENE_KEYS.WORLD_SCENE, {
-        area: destination.area,
-        isInterior: destination.isInterior,
-      });
-    });
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      devButton.remove();
-      noPokemonsButton.remove();
-      changeMapButton.remove();
-      mapPanel.remove();
-    });
-
-    const handleDevKey = (event) => {
-      const key = event.key.toLowerCase();
-      if (event.key === 'F9' || key === '`' || key === 'ñ' || key === 'e') {
-        event.preventDefault();
-        toggleEditor();
-        return;
-      }
-      if (!state.enabled) {
-        return;
-      }
-      if (key === 'g') {
-        event.preventDefault();
-        state.showGrid = !state.showGrid;
-        redraw();
-      }
-      if (key === 'c') {
-        event.preventDefault();
-        exportPatch();
-      }
-      if (key === 'r') {
-        event.preventDefault();
-        resetSessionChanges();
-      }
-    };
-
-    window.addEventListener('keydown', handleDevKey);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      window.removeEventListener('keydown', handleDevKey);
-    });
-
-    this.input.keyboard?.on('keydown-F9', toggleEditor);
-    this.input.keyboard?.on('keydown-G', () => {
-      if (state.enabled) {
-        state.showGrid = !state.showGrid;
-        redraw();
-      }
-    });
-    this.input.keyboard?.on('keydown-C', () => {
-      if (state.enabled) {
-        exportPatch();
-      }
-    });
-    this.input.keyboard?.on('keydown-R', () => {
-      if (state.enabled) {
-        resetSessionChanges();
-      }
-    });
-
-    if (new URLSearchParams(window.location.search).get('devCollision') === '1') {
-      setEditorEnabled(true);
-    }
-
-    const setHoverTileAt = (tileX, tileY, source) => {
-      if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) {
-        state.hoverTile = null;
-        state.lastInput = source;
-        updateHelpText();
-        redraw();
-        return;
-      }
-      state.hoverTile = { x: tileX, y: tileY, value: getGridValueAt(tileX, tileY) };
-      state.lastInput = source;
-      updateHelpText();
-      redraw();
-    };
-
-    const toggleTileAt = (tileX, tileY, source) => {
-      if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) {
-        return;
-      }
-      const beforeValue = getGridValueAt(tileX, tileY);
-      const nextValue = beforeValue > 0 ? 0 : DEV_COLLISION_GID;
-      writeCollisionTile(tileX, tileY, nextValue);
-      state.lastClickedTile = { x: tileX, y: tileY, before: beforeValue, after: nextValue };
-      state.hoverTile = { x: tileX, y: tileY, value: nextValue };
-      state.lastInput = source;
-      rememberChange(tileX, tileY, nextValue, beforeValue);
-      redraw();
-    };
-
-    const getTileFromCanvasEvent = (event) => {
-      const canvas = this.game.canvas;
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      const screenX = (event.clientX - rect.left) * scaleX;
-      const screenY = (event.clientY - rect.top) * scaleY;
-      const worldPoint = this.cameras.main.getWorldPoint(screenX, screenY);
-      return {
-        x: Math.floor(worldPoint.x / map.tileWidth),
-        y: Math.floor(worldPoint.y / map.tileHeight),
-      };
-    };
-
-    const handleCanvasPointerMove = (event) => {
-      if (!state.enabled) {
-        return;
-      }
-      const tile = getTileFromCanvasEvent(event);
-      setHoverTileAt(tile.x, tile.y, 'dom move');
-    };
-
-    const handleCanvasPointerDown = (event) => {
-      if (!state.enabled || event.button !== 0) {
-        return;
-      }
-      event.preventDefault();
-      event.stopPropagation();
-      const tile = getTileFromCanvasEvent(event);
-      toggleTileAt(tile.x, tile.y, 'dom click');
-    };
-
-    this.game.canvas.addEventListener('pointermove', handleCanvasPointerMove, true);
-    this.game.canvas.addEventListener('pointerdown', handleCanvasPointerDown, true);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      this.game.canvas.removeEventListener('pointermove', handleCanvasPointerMove, true);
-      this.game.canvas.removeEventListener('pointerdown', handleCanvasPointerDown, true);
-    });
-
-    this.input.on('pointermove', (pointer) => {
-      if (!state.enabled) {
-        return;
-      }
-      const worldPoint = pointer.positionToCamera(this.cameras.main);
-      const tileX = Math.floor(worldPoint.x / map.tileWidth);
-      const tileY = Math.floor(worldPoint.y / map.tileHeight);
-      setHoverTileAt(tileX, tileY, 'phaser move');
-    });
-
-    this.input.on('pointerdown', (pointer) => {
-      if (!state.enabled || pointer.button !== 0) {
-        return;
-      }
-      const worldPoint = pointer.positionToCamera(this.cameras.main);
-      const tileX = Math.floor(worldPoint.x / map.tileWidth);
-      const tileY = Math.floor(worldPoint.y / map.tileHeight);
-      toggleTileAt(tileX, tileY, 'phaser click');
-    });
-  }
-
-  /**
-   * @returns {void}
-   */
+  /** @returns {void} */
   #createMainMapAnimatedDetails() {
     const normalizedArea = this.#sceneData.area?.toUpperCase();
     const isMainMap = normalizedArea === 'MAIN_1' || normalizedArea === WORLD_ASSET_KEYS.MAIN_1_LEVEL;

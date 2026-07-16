@@ -1,8 +1,8 @@
 import Phaser from './lib/phaser.js';
 import { SCENE_KEYS } from './scenes/scene-keys.js';
-import { PreloadScene } from './scenes/preload-scene.js?v=plaza-v16';
+import { PreloadScene } from './scenes/preload-scene.js?v=characters-v1';
 import { BattleScene } from './scenes/battle-scene.js?v=plaza-v16';
-import { WorldScene } from './scenes/world-scene.js?v=plaza-v18';
+import { WorldScene } from './scenes/world-scene.js?v=characters-v1';
 import { TitleScene } from './scenes/title-scene.js?v=plaza-v16';
 import { OptionsScene } from './scenes/options-scene.js';
 import { TestScene } from './scenes/test-scene.js?v=chain-monsters-v5';

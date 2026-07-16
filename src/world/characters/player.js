@@ -4,6 +4,7 @@ import { exhaustiveGuard } from '../../utils/guard.js';
 import { Character } from './character.js?v=character-depth-v1';
 import { getTargetPositionFromGameObjectPositionAndDirection } from '../../utils/grid-utils.js';
 import { TILE_SIZE } from '../../config.js';
+import { CharacterNameplate } from './character-nameplate.js?v=nameplate-v1';
 
 /**
  * @typedef PlayerConfigProps
@@ -11,6 +12,7 @@ import { TILE_SIZE } from '../../config.js';
  * @property {Phaser.Tilemaps.TilemapLayer} collisionLayer
  * @property {Phaser.Tilemaps.ObjectLayer} [entranceLayer]
  * @property {(entranceName: string, entranceId: string, isBuildingEntrance: boolean) => void} enterEntranceCallback
+ * @property {string} [displayName]
  */
 
 /**
@@ -22,6 +24,8 @@ export class Player extends Character {
   #entranceLayer;
   /** @type {(entranceName: string, entranceId: string, isBuildingEntrance: boolean) => void} */
   #enterEntranceCallback;
+  /** @type {CharacterNameplate | undefined} */
+  #nameplate;
 
   /**
    * @param {PlayerConfig} config
@@ -41,6 +45,14 @@ export class Player extends Character {
     });
     this.#entranceLayer = config.entranceLayer;
     this.#enterEntranceCallback = config.enterEntranceCallback;
+    if (config.displayName) {
+      this.#nameplate = new CharacterNameplate({ scene: config.scene, sprite: this.sprite, name: config.displayName });
+    }
+  }
+
+  update(time) {
+    super.update(time);
+    this.#nameplate?.update();
   }
 
   /**

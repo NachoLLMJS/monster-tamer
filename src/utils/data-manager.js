@@ -6,8 +6,8 @@ import { exhaustiveGuard } from './guard.js';
 import { DataUtils } from './data-utils.js';
 import { GAME_FLAG } from '../types/typedef.js';
 import { MONSTER_CHAIN_TYPE } from '../monsters/chain-types.js';
-
-const LOCAL_STORAGE_KEY = 'MONSTER_TAMER_DATA';
+import { saveRemoteProgress } from '../profile/profile-api.js?v=characters-v1';
+import { queueRemoteSave } from './remote-save-queue.js?v=characters-v1';
 
 /**
  * @typedef PlayerLocation
@@ -115,10 +115,16 @@ export const DATA_MANAGER_STORE_KEYS = Object.freeze({
 class DataManager extends Phaser.Events.EventEmitter {
   /** @type {Phaser.Data.DataManager} */
   #store;
+  /** @type {boolean} */
+  #hasSavedProgress;
+  /** @type {Promise<void>} */
+  #remoteSavePromise;
 
   constructor() {
     super();
     this.#store = new Phaser.Data.DataManager(this);
+    this.#hasSavedProgress = false;
+    this.#remoteSavePromise = Promise.resolve();
     // initialize state with initial values
     this.#updateDataManger(initialState);
   }
@@ -132,22 +138,13 @@ class DataManager extends Phaser.Events.EventEmitter {
    * @returns {void}
    */
   loadData() {
-    // attempt to load data from browser storage and populate the data manager
-    if (typeof Storage === 'undefined') {
-      console.warn(
-        `[${DataManager.name}:loadData] localStorage is not supported, will not be able to save and load data.`
-      );
-      return;
-    }
-
-    const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedData === null) {
+    const remoteProgress = window.__TAMERIA_SESSION__?.character?.progress;
+    if (!remoteProgress || Object.keys(remoteProgress).length === 0) {
       return;
     }
     try {
-      // TODO: we should add error handling and data validation at this step to make sure we get the data we expect.
       /** @type {GlobalState} */
-      const parsedData = JSON.parse(savedData);
+      const parsedData = structuredClone(remoteProgress);
       parsedData.monsters.inParty = parsedData.monsters.inParty.map((monster) => {
         if (monster.monsterId === 1) {
           return {
@@ -203,26 +200,35 @@ class DataManager extends Phaser.Events.EventEmitter {
       });
       // update the state with the saved data
       this.#updateDataManger(parsedData);
+      this.#hasSavedProgress = true;
     } catch (error) {
-      console.warn(
-        `[${DataManager.name}:loadData] encountered an error while attempting to load and parse saved data.`
-      );
+      console.warn(`[${DataManager.name}:loadData] Railway returned invalid character progress.`, error);
     }
   }
 
   /**
    * @returns {void}
    */
-  saveData() {
-    // attempt to storage data in browser storage from data manager
-    if (typeof Storage === 'undefined') {
-      console.warn(
-        `[${DataManager.name}:saveData] localStorage is not supported, will not be able to save and load data.`
-      );
-      return;
+  async saveData() {
+    const session = window.__TAMERIA_SESSION__;
+    if (!session?.token || !session.character) {
+      throw new Error('A wallet-authenticated character is required to save progress.');
     }
     const dataToSave = this.#dataManagerDataToGlobalStateObject();
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave));
+    this.#remoteSavePromise = queueRemoteSave(
+      this.#remoteSavePromise,
+      session,
+      dataToSave,
+      saveRemoteProgress,
+    ).then(() => {
+      this.#hasSavedProgress = true;
+    });
+    return this.#remoteSavePromise;
+  }
+
+  /** @returns {boolean} */
+  hasSavedProgress() {
+    return this.#hasSavedProgress;
   }
 
   /**
@@ -247,7 +253,11 @@ class DataManager extends Phaser.Events.EventEmitter {
 
     this.#store.reset();
     this.#updateDataManger(existingData);
-    this.saveData();
+    if (window.__TAMERIA_SESSION__?.character) {
+      void this.saveData().catch((error) => {
+        console.error('Unable to initialize remote progress', error);
+      });
+    }
   }
 
   /**
