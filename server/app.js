@@ -57,6 +57,9 @@ export function createApp({ repository, jwtSecret, authOrigin = 'http://localhos
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
   app.use((req, res, next) => {
+    if (req.path === '/' || req.path === '/index.html' || req.path.startsWith('/src/') || req.path.startsWith('/api/')) {
+      res.set('Cache-Control', 'no-store');
+    }
     res.set({
       'Content-Security-Policy': [
         "default-src 'self'",

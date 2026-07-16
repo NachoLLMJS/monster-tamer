@@ -22,12 +22,20 @@ test('security policy allows Phaser blobs but only approved script and network o
   t.after(() => server.close());
   const baseUrl = `http://127.0.0.1:${server.address().port}`;
   const paths = ['/api/health', '/', '/src/main.js', '/assets/data/items.json'];
-  const policies = await Promise.all(paths.map(async (path) => {
+  const responses = await Promise.all(paths.map(async (path) => {
     const response = await fetch(`${baseUrl}${path}`);
     assert.equal(response.status, 200, `${path} must be served`);
-    return response.headers.get('content-security-policy') ?? '';
+    return {
+      path,
+      policy: response.headers.get('content-security-policy') ?? '',
+      cacheControl: response.headers.get('cache-control') ?? '',
+    };
   }));
+  const policies = responses.map(({ policy }) => policy);
   assert.ok(policies.every((policy) => policy === policies[0]), 'CSP must cover API and every static response');
+  for (const response of responses.filter(({ path }) => path !== '/assets/data/items.json')) {
+    assert.equal(response.cacheControl, 'no-store', `${response.path} must not survive across deployments`);
+  }
 
   const directives = parsePolicy(policies[0]);
   assert.deepEqual(directives['img-src'], ["'self'", 'data:', 'blob:']);

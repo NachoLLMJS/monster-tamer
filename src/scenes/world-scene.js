@@ -15,6 +15,7 @@ import { NPC, NPC_MOVEMENT_PATTERN } from '../world/characters/npc.js?v=characte
 import { WorldMenu } from '../world/world-menu.js?v=character-depth-v1';
 import { QuestTracker } from '../world/quest-tracker.js?v=english-v1';
 import { STORY_FLAGS } from '../world/story-flags.js';
+import { SPECTATOR_ACTION, isWorldActionAllowed } from '../world/spectator-policy.js';
 import { BaseScene } from './base-scene.js';
 import { DataUtils } from '../utils/data-utils.js';
 import { playSoundFx } from '../utils/audio-utils.js';
@@ -346,8 +347,10 @@ export class WorldScene extends BaseScene {
 
     // create menu and persistent story objective tracker
     this.#menu = new WorldMenu(this);
-    this.#questTracker = new QuestTracker(this);
-    this.#questTracker.sync();
+    if (isWorldActionAllowed(window.__TAMERIA_SPECTATOR_MODE__ === true, SPECTATOR_ACTION.PROGRESS)) {
+      this.#questTracker = new QuestTracker(this);
+      this.#questTracker.sync();
+    }
 
     // create event zones
     this.#createEventEncounterZones(map);
@@ -410,11 +413,21 @@ export class WorldScene extends BaseScene {
       this.#player.moveCharacter(selectedDirectionHeldDown, isShiftKeyDown);
     }
 
-    if (wasSpaceKeyPressed && !this.#player.isMoving && !this.#menu.isVisible) {
+    const isSpectator = window.__TAMERIA_SPECTATOR_MODE__ === true;
+    if (
+      wasSpaceKeyPressed &&
+      !this.#player.isMoving &&
+      !this.#menu.isVisible &&
+      isWorldActionAllowed(isSpectator, SPECTATOR_ACTION.INTERACT)
+    ) {
       this.#handlePlayerInteraction();
     }
 
-    if (this._controls.wasEnterKeyPressed() && !this.#player.isMoving) {
+    if (
+      this._controls.wasEnterKeyPressed() &&
+      !this.#player.isMoving &&
+      isWorldActionAllowed(isSpectator, SPECTATOR_ACTION.MENU)
+    ) {
       if (this.#dialogUi.isVisible || this.#isProcessingNpcEvent) {
         return;
       }
@@ -626,6 +639,14 @@ export class WorldScene extends BaseScene {
 
     // update camera bounds for given level after player moves
     CameraUtils.updateMainCameraBounds(this, this.#player.sprite, this.#cameraRegions);
+
+    const isSpectator = window.__TAMERIA_SPECTATOR_MODE__ === true;
+    if (
+      !isWorldActionAllowed(isSpectator, SPECTATOR_ACTION.EVENT) &&
+      !isWorldActionAllowed(isSpectator, SPECTATOR_ACTION.ENCOUNTER)
+    ) {
+      return;
+    }
 
     // check to see if the player encountered cut scene zone
     this.#player.sprite.getBounds(this.#rectangleForOverlapCheck1);
@@ -880,8 +901,9 @@ export class WorldScene extends BaseScene {
    * @returns {void}
    */
   #handleEntranceEnteredCallback(entranceName, entranceId, isBuildingEntrance) {
+    const isSpectator = window.__TAMERIA_SPECTATOR_MODE__ === true;
     const rocksCleared = dataManager.getFlags().has(STORY_FLAGS.ROCKS_CLEARED);
-    if (!canUseEntrance(this.#sceneData.area, entranceName, rocksCleared)) {
+    if (!isSpectator && !canUseEntrance(this.#sceneData.area, entranceName, rocksCleared)) {
       return;
     }
 
