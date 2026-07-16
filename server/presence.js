@@ -5,6 +5,9 @@ const MAP_BOUNDS = Object.freeze({
   main_1: { width: 2560, height: 5568 },
   forest_1: { width: 1280, height: 768 },
   plaza_1: { width: 1536, height: 1024 },
+  building_1: { width: 832, height: 576 },
+  building_2: { width: 832, height: 576 },
+  building_3: { width: 832, height: 576 },
 });
 const TILE_SIZE = 64;
 const DIRECTIONS = new Set(['UP', 'DOWN', 'LEFT', 'RIGHT']);

@@ -79,6 +79,13 @@ test('authenticated players and spectators share live movement inside the same m
   assert.deepEqual((await moved).player, {
     id: alice.id, name: 'Alice', area: 'main_1', x: 128, y: 128, direction: 'RIGHT', moving: true,
   });
+
+  for (const area of ['building_1', 'building_2', 'building_3']) {
+    const interiorSpectator = await connect(url, { type: 'spectate', area });
+    const interiorSnapshot = await nextMessage(interiorSpectator, (message) => message.type === 'snapshot');
+    assert.deepEqual(interiorSnapshot.players, []);
+    interiorSpectator.close();
+  }
 });
 
 test('presence rejects missing origins, malformed payloads, and teleport movement', async (t) => {
